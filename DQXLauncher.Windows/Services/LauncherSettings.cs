@@ -8,8 +8,8 @@ namespace DQXLauncher.Windows.Services;
 
 public partial class LauncherSettings : ObservableObject
 {
-    [ObservableProperty] private string? _gameFolderPath;
-    [ObservableProperty] private string? _saveFolderPath;
+    [ObservableProperty] private partial string? GameFolderPath { get; set; }
+    [ObservableProperty] private partial string? SaveFolderPath { get; set; }
 
     private static readonly string SettingsPath = Path.Combine(Paths.AppData, "LauncherSettings.json");
 
