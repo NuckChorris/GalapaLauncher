@@ -32,7 +32,7 @@ public class PlayerCredential : IPlayerCredential<PlayerCredential>
         set
         {
             if (PasswordCred is not null) Vault.Remove(PasswordCred);
-            Vault.Add(value);
+            if (value is not null) Vault.Add(value);
         }
     }
 
@@ -52,7 +52,7 @@ public class PlayerCredential : IPlayerCredential<PlayerCredential>
         set
         {
             if (TotpCred is not null) Vault.Remove(TotpCred);
-            Vault.Add(value);
+            if (value is not null) Vault.Add(value);
         }
     }
 
@@ -74,8 +74,8 @@ public class PlayerCredential : IPlayerCredential<PlayerCredential>
 
     public void Save()
     {
-        PasswordCred = new PasswordCredential(PasswordResource, Token, Password);
-        TotpCred = new PasswordCredential(TotpResource, Token, TotpKey);
+        PasswordCred = Password is null ? null : new PasswordCredential(PasswordResource, Token, Password);
+        TotpCred = TotpKey is null ? null : new PasswordCredential(TotpResource, Token, TotpKey);
     }
 
     public void Remove()
