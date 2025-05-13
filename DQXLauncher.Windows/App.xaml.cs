@@ -10,6 +10,7 @@ using DQXLauncher.Windows.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Serilog;
+using Velopack;
 
 namespace DQXLauncher.Windows;
 
@@ -20,6 +21,8 @@ public partial class App : Application
 
     public App()
     {
+        VelopackApp.Build()
+            .Run();
         InitializeComponent();
 
         _services = CreateServiceProvider();
