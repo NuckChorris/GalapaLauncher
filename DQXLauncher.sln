@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DQXLauncher.Toolbox", "DQXL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DQXLauncher.TestUtilities", "DQXLauncher.TestUtilities\DQXLauncher.TestUtilities.csproj", "{B7A332E5-49A5-42C2-821C-2B131C05E8DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DQXLauncher.Avalonia", "DQXLauncher.Avalonia\DQXLauncher.Avalonia.csproj", "{319F39D8-25DE-4B6A-8942-4F23ACB0A407}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -95,6 +97,18 @@ Global
 		{B7A332E5-49A5-42C2-821C-2B131C05E8DB}.Release|x64.Build.0 = Release|Any CPU
 		{B7A332E5-49A5-42C2-821C-2B131C05E8DB}.Release|x86.ActiveCfg = Release|Any CPU
 		{B7A332E5-49A5-42C2-821C-2B131C05E8DB}.Release|x86.Build.0 = Release|Any CPU
+		{319F39D8-25DE-4B6A-8942-4F23ACB0A407}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{319F39D8-25DE-4B6A-8942-4F23ACB0A407}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{319F39D8-25DE-4B6A-8942-4F23ACB0A407}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{319F39D8-25DE-4B6A-8942-4F23ACB0A407}.Debug|x64.Build.0 = Debug|Any CPU
+		{319F39D8-25DE-4B6A-8942-4F23ACB0A407}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{319F39D8-25DE-4B6A-8942-4F23ACB0A407}.Debug|x86.Build.0 = Debug|Any CPU
+		{319F39D8-25DE-4B6A-8942-4F23ACB0A407}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{319F39D8-25DE-4B6A-8942-4F23ACB0A407}.Release|ARM64.Build.0 = Release|Any CPU
+		{319F39D8-25DE-4B6A-8942-4F23ACB0A407}.Release|x64.ActiveCfg = Release|Any CPU
+		{319F39D8-25DE-4B6A-8942-4F23ACB0A407}.Release|x64.Build.0 = Release|Any CPU
+		{319F39D8-25DE-4B6A-8942-4F23ACB0A407}.Release|x86.ActiveCfg = Release|Any CPU
+		{319F39D8-25DE-4B6A-8942-4F23ACB0A407}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
