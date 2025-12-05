@@ -1,4 +1,6 @@
-﻿namespace DQXLauncher.Avalonia.ViewModels;
+﻿using DQXLauncher.Avalonia.ViewModels.AppFrame;
+
+namespace DQXLauncher.Avalonia.ViewModels;
 
 public partial class MainWindowViewModel(AppFrameViewModel appFrameViewModel) : ViewModelBase
 {

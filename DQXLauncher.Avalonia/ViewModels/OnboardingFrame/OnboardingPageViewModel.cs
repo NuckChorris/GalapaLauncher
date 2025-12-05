@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace DQXLauncher.Avalonia.ViewModels.Pages.Onboarding;
+namespace DQXLauncher.Avalonia.ViewModels.OnboardingFrame;
 
 public abstract class OnboardingPageViewModel : ObservableValidator
 {

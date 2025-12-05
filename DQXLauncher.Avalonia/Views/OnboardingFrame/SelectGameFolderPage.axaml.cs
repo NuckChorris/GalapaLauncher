@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
 
-namespace DQXLauncher.Avalonia.Pages.OnboardingFrame;
+namespace DQXLauncher.Avalonia.Views.OnboardingFrame;
 
 public partial class SelectGameFolderPage : UserControl
 {

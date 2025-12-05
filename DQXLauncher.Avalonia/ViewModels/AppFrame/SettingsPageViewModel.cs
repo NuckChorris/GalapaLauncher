@@ -1,4 +1,4 @@
-﻿namespace DQXLauncher.Avalonia.ViewModels.Pages.App;
+﻿namespace DQXLauncher.Avalonia.ViewModels.AppFrame;
 
 public class SettingsPageViewModel : AppPageViewModel
 {

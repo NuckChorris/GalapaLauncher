@@ -1,11 +1,11 @@
 ﻿using Avalonia.Controls;
 
-namespace DQXLauncher.Avalonia.Pages.AppFrame;
+namespace DQXLauncher.Avalonia.Views.AppFrame;
 
 public partial class SettingsPage : UserControl
 {
     public SettingsPage()
     {
-        InitializeComponent();
+        this.InitializeComponent();
     }
 }

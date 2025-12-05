@@ -1,27 +1,27 @@
 ﻿using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DQXLauncher.Avalonia.Services;
-using Page = DQXLauncher.Avalonia.Pages.OnboardingFrame;
+using Page = DQXLauncher.Avalonia.Views.OnboardingFrame;
 
-namespace DQXLauncher.Avalonia.ViewModels;
+namespace DQXLauncher.Avalonia.ViewModels.OnboardingFrame;
 
 public partial class OnboardingFrameViewModel : ObservableObject
 {
-    [ObservableProperty] private Settings _settings;
     [ObservableProperty] private Type? _currentPage;
+    [ObservableProperty] private Settings _settings;
 
     public OnboardingFrameViewModel(Settings settings)
     {
-        Settings = settings;
+        this.Settings = settings;
     }
 
     public Type? NextPage
     {
         get
         {
-            if (Settings.GameFolderPath is null) return typeof(Page.SelectGameFolderPage);
+            if (this.Settings.GameFolderPath is null) return typeof(Page.SelectGameFolderPage);
 
-            if (Settings.GameFolderPath is null)
+            if (this.Settings.GameFolderPath is null)
             {
             }
 
