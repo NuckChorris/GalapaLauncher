@@ -15,7 +15,7 @@ public partial class App : Application
         AvaloniaXamlLoader.Load(this);
 
         // Set up ViewLocator with dependency injection support
-        DataTemplates.Add(new ViewLocator(Program.Services ?? Program.CreateServiceProvider()));
+        this.DataTemplates.Add(new ViewLocator(Program.Services));
     }
 
     public override void OnFrameworkInitializationCompleted()

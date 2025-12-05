@@ -4,7 +4,7 @@ using Avalonia;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using DQXLauncher.Avalonia.Services;
 using DQXLauncher.Avalonia.ViewModels;
-using DQXLauncher.Avalonia.ViewModels.Pages.App;
+using DQXLauncher.Avalonia.ViewModels.AppFrame;
 using DQXLauncher.Avalonia.Views;
 using DQXLauncher.Core.Game.ConfigFile;
 using DQXLauncher.Core.Services;
@@ -17,16 +17,9 @@ namespace DQXLauncher.Avalonia;
 
 internal sealed class Program
 {
-    internal class Lazier<T> : Lazy<T> where T : class
-    {
-        public Lazier(IServiceProvider provider)
-            : base(() => provider.GetRequiredService<T>())
-        {
-        }
-    }
+    public static ServiceProvider Services;
 
     public static ConsoleVelopackLogger Log { get; } = new();
-    public static ServiceProvider Services;
 
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -41,7 +34,7 @@ internal sealed class Program
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
 
-    public static ServiceProvider CreateServiceProvider()
+    private static ServiceProvider CreateServiceProvider()
     {
         ServiceCollection services = new();
         services.AddTransient(typeof(Lazy<>), typeof(Lazier<>));
@@ -87,4 +80,7 @@ internal sealed class Program
             .WithInterFont()
             .LogToTrace();
     }
+
+    // This is a hack to make Lazy<T> work with Dependency Injection
+    internal class Lazier<T>(IServiceProvider provider) : Lazy<T>(provider.GetRequiredService<T>) where T : class;
 }
