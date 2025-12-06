@@ -13,31 +13,19 @@ namespace DQXLauncher.Core.Models;
 /// <param name="json">The PlayerList.json record</param>
 /// <param name="xml">The dqxPlayerList.xml record</param>
 /// <param name="credential">The IPlayerCredential record</param>
-/// <typeparam name="TCredential">An OS-specific implementation of IPlayerCredential</typeparam>
-public class SavedPlayer<TCredential>(
+public class SavedPlayer(
     PlayerListJson.SavedPlayer json,
     PlayerListXml.SavedPlayer xml,
-    TCredential credential)
-    where TCredential : class, IPlayerCredential<TCredential>, new()
+    IPlayerCredential credential)
 {
     private SavedPlayerLoginStrategy? _loginStrategy;
 
     public SavedPlayerLoginStrategy LoginStrategy =>
         _loginStrategy ??= new SavedPlayerLoginStrategy(Token, Number - 1, _credential);
 
-    private readonly TCredential _credential = credential;
+    private readonly IPlayerCredential _credential = credential;
     private readonly PlayerListXml.SavedPlayer _xml = xml;
     private readonly PlayerListJson.SavedPlayer _json = json;
-
-    /// <summary>
-    ///     Create a new player with the given token. It is generally recommended to use
-    ///     <see cref="PlayerList{TCredential}.Add(string)" /> instead, since it handles number allocation.
-    /// </summary>
-    /// <param name="token">The token to assign</param>
-    public SavedPlayer(string token) : this(new PlayerListJson.SavedPlayer { Token = token },
-        new PlayerListXml.SavedPlayer { Token = token }, new TCredential { Token = token })
-    {
-    }
 
     /// <summary>
     ///     The number assigned to this player.
@@ -83,7 +71,7 @@ public class SavedPlayer<TCredential>(
     ///     The player's password, if saved.
     /// </summary>
     /// <remarks>
-    ///     This is stored in the <see cref="IPlayerCredential{TSelf}" /> implementation, and is not stored in the XML or
+    ///     This is stored in the <see cref="IPlayerCredential" /> implementation, and is not stored in the XML or
     ///     JSON files.
     /// </remarks>
     public string? Password
@@ -97,12 +85,20 @@ public class SavedPlayer<TCredential>(
     /// </summary>
     /// <remarks>
     ///     This is a base32 string which is used to generate a TOTP code for the player. It is stored in the
-    ///     <see cref="IPlayerCredential{TSelf}" /> implementation, and is not stored in the XML or JSON files.
+    ///     <see cref="IPlayerCredential" /> implementation, and is not stored in the XML or JSON files.
     /// </remarks>
     public string? TotpKey
     {
         get => _credential.TotpKey;
         set => _credential.TotpKey = value;
+    }
+
+    /// <summary>
+    ///     Save the credential to the credential store. This is called by <see cref="PlayerList.SaveAsync" />.
+    /// </summary>
+    internal void SaveCredential()
+    {
+        this._credential.Save();
     }
 }
 
@@ -139,12 +135,12 @@ public class TrialPlayer
 ///     This provides a superset of the data stored in <see cref="PlayerListXml">dqxPlayerList.xml</see>, with additional
 ///     properties such as the username, password, OTP key, etc. As such, we store this data in our own
 ///     <see cref="PlayerListJson">PlayerList.json</see> and an OS-specific implementation of
-///     <see cref="IPlayerCredential{TSelf}" /> which is used to store the password and TOTP key securely. This class
+///     <see cref="IPlayerCredential" /> which is used to store the password and TOTP key securely. This class
 ///     coordinates the three; when you save it, you save all three. When loading, the XML file is used as the source of
 ///     truth, and the JSON and PlayerCredential are updated to match. This means removing a player from the XML (using the
 ///     official launcher) will also remove it from the JSON on next startup.
 /// </remarks>
-public class PlayerList<TCredential> where TCredential : class, IPlayerCredential<TCredential>, new()
+public class PlayerList
 {
     /// <summary>
     ///     The official launcher only supports 4 players. This exception is thrown when you try to add a 5th player.
@@ -155,25 +151,31 @@ public class PlayerList<TCredential> where TCredential : class, IPlayerCredentia
     /// </remarks>
     public class PlayerLimitReached() : Exception("Player limit reached");
 
+    private readonly IPlayerCredentialFactory _credentialFactory;
     private PlayerListXml? _xml;
     private PlayerListJson? _json;
-    private ImmutableList<TCredential>? _credentials;
+    private ImmutableList<string>? _credentialTokens;
 
-    public List<SavedPlayer<TCredential>> Players { get; private set; } = new();
+    public List<SavedPlayer> Players { get; private set; } = new();
+
+    public PlayerList(IPlayerCredentialFactory credentialFactory)
+    {
+        this._credentialFactory = credentialFactory;
+    }
 
     /// <summary>
-    ///     Add a new player to the list by their token. This will add the player to the XML, JSON, and credential store but
-    ///     NOT save them to disk until you call <see cref="SaveAsync" />.
+    ///     Add a new player to the list by their token. This will add the player to the XML, JSON, and credential in memory but
+    ///     NOT save them to disk/credential store until you call <see cref="SaveAsync" />.
     /// </summary>
     /// <param name="token">The sqex token for a saved player</param>
     /// <returns>The SavedPlayer that was created</returns>
-    public SavedPlayer<TCredential> Add(string token)
+    public SavedPlayer Add(string token)
     {
         var xml = new PlayerListXml.SavedPlayer { Token = token, Number = GetAvailableNumber() };
         var json = new PlayerListJson.SavedPlayer { Token = token, Number = GetAvailableNumber() };
-        var credential = new TCredential { Token = token };
+        var credential = this._credentialFactory.Create(token);
 
-        var player = new SavedPlayer<TCredential>(json, xml, credential);
+        var player = new SavedPlayer(json, xml, credential);
         Add(player);
         return player;
     }
@@ -183,7 +185,7 @@ public class PlayerList<TCredential> where TCredential : class, IPlayerCredentia
     ///     until you call <see cref="SaveAsync" />.
     /// </summary>
     /// <param name="player">The SavedPlayer to add</param>
-    public void Add(SavedPlayer<TCredential> player)
+    public void Add(SavedPlayer player)
     {
         Players.Add(player);
     }
@@ -206,7 +208,7 @@ public class PlayerList<TCredential> where TCredential : class, IPlayerCredentia
     ///     save them to disk until you call <see cref="SaveAsync" />.
     /// </summary>
     /// <param name="player">The player to remove</param>
-    public void Remove(SavedPlayer<TCredential> player)
+    public void Remove(SavedPlayer player)
     {
         Players.Remove(player);
     }
@@ -224,6 +226,9 @@ public class PlayerList<TCredential> where TCredential : class, IPlayerCredentia
         Contract.Assert(_xml is not null);
         Contract.Assert(_json is not null);
 
+        // Save all credentials for all players
+        foreach (var player in this.Players) player.SaveCredential();
+
         await Task.WhenAll(_xml.SaveAsync(), _json.SaveAsync());
     }
 
@@ -234,18 +239,20 @@ public class PlayerList<TCredential> where TCredential : class, IPlayerCredentia
     {
         _xml = await PlayerListXml.LoadAsync();
         _json = await PlayerListJson.LoadAsync();
-        _credentials = TCredential.GetAll();
+        this._credentialTokens = await this._credentialFactory.GetAllTokensAsync();
 
         // Sync the XML to the JSON and credential store
         await SyncFromXml();
-        Players = new List<SavedPlayer<TCredential>>(
-            _json!.Players.Values.Select(jsonPlayer =>
-            {
-                var xmlPlayer = _xml!.Players[jsonPlayer.Token];
-                var credential = TCredential.Load(jsonPlayer.Token);
 
-                return new SavedPlayer<TCredential>(jsonPlayer, xmlPlayer, credential);
-            }));
+        var players = new List<SavedPlayer>();
+        foreach (var jsonPlayer in this._json!.Players.Values)
+        {
+            var xmlPlayer = this._xml!.Players[jsonPlayer.Token];
+            var credential = await this._credentialFactory.LoadAsync(jsonPlayer.Token);
+            players.Add(new SavedPlayer(jsonPlayer, xmlPlayer, credential));
+        }
+
+        this.Players = players;
 
         await SaveAsync();
     }
@@ -265,14 +272,13 @@ public class PlayerList<TCredential> where TCredential : class, IPlayerCredentia
     {
         Contract.Assert(_xml is not null);
         Contract.Assert(_json is not null);
-        Contract.Assert(_credentials is not null);
+        Contract.Assert(this._credentialTokens is not null);
 
         // Delete credentials for any players removed from the XML file
         var xmlTokens = _xml.Players.Keys.ToHashSet();
-        var credTokens = _credentials.Select(cr => cr.Token).ToHashSet();
-        foreach (var token in credTokens.Except(xmlTokens))
+        foreach (var token in this._credentialTokens.Except(xmlTokens))
         {
-            var cred = new TCredential { Token = token };
+            var cred = await this._credentialFactory.LoadAsync(token);
             cred.Remove();
         }
 

@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using OtpNet;
+﻿using OtpNet;
 
 namespace DQXLauncher.Core.Models;
 
@@ -14,13 +13,7 @@ public interface IPlayerCredential
 
     public string ComputeTotp()
     {
-        var totp = new Totp(Base32Encoding.ToBytes(TotpKey));
+        var totp = new Totp(Base32Encoding.ToBytes(this.TotpKey));
         return totp.ComputeTotp();
     }
-}
-
-public interface IPlayerCredential<TSelf> : IPlayerCredential where TSelf : IPlayerCredential<TSelf>
-{
-    public static abstract TSelf Load(string token);
-    public static abstract ImmutableList<TSelf> GetAll();
 }
