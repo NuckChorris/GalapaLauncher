@@ -5,15 +5,15 @@ namespace DQXLauncher.Core.Game.LoginStrategy;
 
 public class GuestLoginStrategy : LoginStrategy, ILoginStepHandler<UsernamePasswordAction>
 {
-    private WebForm? _loginForm;
     private Type? _expectedActionType;
+    private WebForm? _loginForm;
 
     public override async Task<LoginStep> Start()
     {
         // Load the login form
         try
         {
-            _loginForm = await GetLoginForm(new Dictionary<string, string>
+            this._loginForm = await this.GetLoginForm(new Dictionary<string, string>
             {
                 { "dqxmode", "3" } // Guest mode
             });
@@ -24,31 +24,31 @@ public class GuestLoginStrategy : LoginStrategy, ILoginStepHandler<UsernamePassw
             return new DisplayError("Failed to load login form", new RestartStrategy());
         }
 
-        _expectedActionType = typeof(UsernamePasswordAction);
+        this._expectedActionType = typeof(UsernamePasswordAction);
         return new AskUsernamePassword();
     }
 
     public virtual async Task<LoginStep> Step(UsernamePasswordAction action)
     {
-        Contract.Assert(_expectedActionType == typeof(UsernamePasswordAction));
-        Contract.Assert(_loginForm is not null);
+        Contract.Assert(this._expectedActionType == typeof(UsernamePasswordAction));
+        Contract.Assert(this._loginForm is not null);
 
-        var web = await GetWebClient();
+        var web = await this.GetWebClient();
 
-        _loginForm.Fields["sqexid"] = action.Username;
-        _loginForm.Fields["password"] = action.Password;
+        this._loginForm.Fields["sqexid"] = action.Username;
+        this._loginForm.Fields["password"] = action.Password;
 
-        var response = await LoginResponse.FromHttpResponse(await web.SendFormAsync(_loginForm));
+        var response = await LoginResponse.FromHttpResponse(await web.SendFormAsync(this._loginForm));
 
         if (response.ErrorMessage is not null)
         {
-            _loginForm = response.Form;
+            this._loginForm = response.Form;
             return new DisplayError(response.ErrorMessage, new AskUsernamePassword(action.Username, action.Password));
         }
 
         if (response.SessionId is null)
         {
-            _loginForm = response.Form;
+            this._loginForm = response.Form;
             return new DisplayError("Login failed", new AskUsernamePassword(action.Username, action.Password));
         }
 

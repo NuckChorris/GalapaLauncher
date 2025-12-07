@@ -17,4 +17,6 @@ public record DisplayError(string Message, LoginStep Continue) : LoginStep;
 public record LoginCompleted(string SessionId) : LoginStep
 {
     public string? Token { get; init; }
+    public string? Password { get; init; }
+    public string? Username { get; init; }
 }

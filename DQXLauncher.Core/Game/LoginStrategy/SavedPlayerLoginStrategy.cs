@@ -3,21 +3,20 @@ using DQXLauncher.Core.Utils.WebClient;
 
 namespace DQXLauncher.Core.Game.LoginStrategy;
 
-public class SavedPlayerLoginStrategy(string token, int number) : LoginStrategy, ILoginStepHandler<PasswordAction>
+public class SavedPlayerLoginStrategy(string token) : LoginStrategy, ILoginStepHandler<PasswordAction>
 {
-    private WebForm? _loginForm;
     private Type? _expectedActionType;
-    private readonly string _token = token;
-    public int PlayerNumber { get; set; } = number;
+    private WebForm? _loginForm;
+    private string? _username;
 
     public override async Task<LoginStep> Start()
     {
         try
         {
-            _loginForm = await GetLoginForm(new Dictionary<string, string>
+            this._loginForm = await this.GetLoginForm(new Dictionary<string, string>
             {
                 { "dqxmode", "2" },
-                { "id", _token }
+                { "id", token }
             });
         }
         catch (Exception)
@@ -26,41 +25,43 @@ public class SavedPlayerLoginStrategy(string token, int number) : LoginStrategy,
             return new DisplayError("Failed to load login form", new RestartStrategy());
         }
 
-        var username = _loginForm.Fields["sqexid"];
+        this._username = this._loginForm.Fields["sqexid"];
 
-        _expectedActionType = typeof(PasswordAction);
-        return new AskPassword(username, credential?.Password);
+        this._expectedActionType = typeof(PasswordAction);
+        return new AskPassword(this._username);
     }
 
     public virtual async Task<LoginStep> Step(PasswordAction action)
     {
-        Contract.Assert(_expectedActionType == typeof(PasswordAction));
-        Contract.Assert(_loginForm is not null);
+        Contract.Assert(this._expectedActionType == typeof(PasswordAction));
+        Contract.Assert(this._loginForm is not null);
 
-        var web = await GetWebClient();
+        var web = await this.GetWebClient();
 
-        _loginForm.Fields["password"] = action.Password;
+        this._loginForm.Fields["password"] = action.Password;
 
-        var response = await LoginResponse.FromHttpResponse(await web.SendFormAsync(_loginForm));
+        var response = await LoginResponse.FromHttpResponse(await web.SendFormAsync(this._loginForm));
 
         if (response.ErrorMessage is not null && response.Form is not null)
         {
-            _loginForm = response.Form;
-            return new DisplayError(response.ErrorMessage, new AskPassword(
-                _loginForm.Fields["sqexid"],
+            this._loginForm = response.Form;
+            return new DisplayError(response.ErrorMessage, new AskPassword(this._loginForm.Fields["sqexid"],
                 action.Password));
         }
 
         if (response.SessionId is null && response.Form is not null)
         {
-            _loginForm = response.Form;
-            return new DisplayError("Login failed", new AskPassword(
-                _loginForm.Fields["sqexid"],
+            this._loginForm = response.Form;
+            return new DisplayError("Login failed", new AskPassword(this._loginForm.Fields["sqexid"],
                 action.Password));
         }
 
         if (response.SessionId is null) return new DisplayError("Login failed", new RestartStrategy());
 
-        return new LoginCompleted(response.SessionId);
+        return new LoginCompleted(response.SessionId)
+        {
+            Username = this._username,
+            Password = action.Password
+        };
     }
 }
