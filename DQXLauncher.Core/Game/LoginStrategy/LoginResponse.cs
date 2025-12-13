@@ -9,28 +9,16 @@ public record LoginResponse
     public required HtmlDocument Document { get; init; }
 
     // ReSharper disable once ReturnTypeCanBeNotNullable
-    public HtmlNode? SqexAuth => Document.DocumentNode.SelectSingleNode("//x-sqexauth");
-
-    // HtmlAgilityPack lies about the nullability of its properties, these are *very* nullable.
-    // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-    public string? ErrorMessage => SqexAuth?.Attributes["message"]?.Value;
-    public string? SessionId => SqexAuth?.Attributes["sid"]?.Value;
-    public string? Lang => SqexAuth?.Attributes["lang"]?.Value;
-    public string? Region => SqexAuth?.Attributes["region"]?.Value;
-    public string? Utc => SqexAuth?.Attributes["utc"]?.Value;
-    public string? Mode => SqexAuth?.Attributes["mode"]?.Value;
-
-    public string? Token => SqexAuth?.Attributes["id"]?.Value;
-    // ReSharper restore ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+    public HtmlNode? SqexAuth => this.Document.DocumentNode.SelectSingleNode("//x-sqexauth");
 
     public WebForm? Form
     {
         get
         {
-            var form = Document.DocumentNode.SelectSingleNode("//form[@name='mainForm']");
+            var form = this.Document.DocumentNode.SelectSingleNode("//form[@name='mainForm']");
             // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             if (form is null) return null;
-            return WebForm.FromHtmlForm(form, Response.RequestMessage!.RequestUri!);
+            return WebForm.FromHtmlForm(form, this.Response.RequestMessage!.RequestUri!);
         }
     }
 
@@ -45,4 +33,16 @@ public record LoginResponse
             Response = response
         };
     }
+
+    // HtmlAgilityPack lies about the nullability of its properties, these are *very* nullable.
+    // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+    public string? ErrorMessage => this.SqexAuth?.Attributes["message"]?.Value;
+    public string? SessionId => this.SqexAuth?.Attributes["sid"]?.Value;
+    public string? Lang => this.SqexAuth?.Attributes["lang"]?.Value;
+    public string? Region => this.SqexAuth?.Attributes["region"]?.Value;
+    public string? Utc => this.SqexAuth?.Attributes["utc"]?.Value;
+    public string? Mode => this.SqexAuth?.Attributes["mode"]?.Value;
+
+    public string? Token => this.SqexAuth?.Attributes["id"]?.Value;
+    // ReSharper restore ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 }

@@ -19,12 +19,12 @@ public abstract class LoginStrategy
     {
         if (this is ILoginStepHandler<TAction> handler) return handler.Step(action);
 
-        throw new InvalidOperationException($"Strategy {GetType()} cannot handle {typeof(TAction)}");
+        throw new InvalidOperationException($"Strategy {this.GetType()} cannot handle {typeof(TAction)}");
     }
 
     protected async Task<WebForm> GetLoginForm(Dictionary<string, string> payload)
     {
-        var httpClient = await GetWebClient();
+        var httpClient = await this.GetWebClient();
         var request = new HttpRequestMessage(HttpMethod.Post, LoginUrl);
 
         request.Content = new FormUrlEncodedContent(payload);

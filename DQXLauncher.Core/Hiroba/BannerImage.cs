@@ -1,16 +1,17 @@
-﻿using HtmlAgilityPack;
+﻿using System.Text.RegularExpressions;
 using DQXLauncher.Core.Utils.WebClient;
-using System.Text.RegularExpressions;
+using HtmlAgilityPack;
 
 namespace DQXLauncher.Core.Hiroba;
 
 public partial class BannerImage
 {
-    [GeneratedRegex(@"javascript:ctrLinkAction\('link=([^']+)'\);")]
-    private static partial Regex HrefFormat();
     public string Alt { get; set; } = string.Empty;
     public string Href { get; set; } = string.Empty;
     public string Src { get; set; } = string.Empty;
+
+    [GeneratedRegex(@"javascript:ctrLinkAction\('link=([^']+)'\);")]
+    private static partial Regex HrefFormat();
 
     public static async Task<List<BannerImage>> GetBanners()
     {

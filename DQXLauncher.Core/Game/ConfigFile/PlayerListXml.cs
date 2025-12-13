@@ -7,6 +7,8 @@ namespace DQXLauncher.Core.Game.ConfigFile;
 
 public class PlayerListXml : ConfigFile
 {
+    private Dictionary<string, SavedPlayer> _players = new();
+
     private PlayerListXml() : base("dqxPlayerList.xml", 0x11, UsernameObfuscator.Factory)
     {
     }
@@ -19,19 +21,17 @@ public class PlayerListXml : ConfigFile
                                                  </DragonQuestX>
                                                  """;
 
-    private XElement PlayerListNode => Document?.XPathSelectElement("//DragonQuestX/PlayerList")!;
-    private XElement? TrialInfoNode => PlayerListNode.XPathSelectElement("//TrialInfo");
-
-    private Dictionary<string, SavedPlayer> _players = new();
-    public ImmutableDictionary<string, SavedPlayer> Players => _players.ToImmutableDictionary();
+    private XElement PlayerListNode => this.Document?.XPathSelectElement("//DragonQuestX/PlayerList")!;
+    private XElement? TrialInfoNode => this.PlayerListNode.XPathSelectElement("//TrialInfo");
+    public ImmutableDictionary<string, SavedPlayer> Players => this._players.ToImmutableDictionary();
 
     public TrialPlayer? Trial
     {
-        get => TrialInfoNode is null ? null : new TrialPlayer(TrialInfoNode);
+        get => this.TrialInfoNode is null ? null : new TrialPlayer(this.TrialInfoNode);
         set
         {
-            TrialInfoNode?.Remove();
-            PlayerListNode.Add(value?.Element);
+            this.TrialInfoNode?.Remove();
+            this.PlayerListNode.Add(value?.Element);
         }
     }
 
@@ -42,14 +42,14 @@ public class PlayerListXml : ConfigFile
     /// <exception cref="InvalidConfigException">The config file is structured incorrectly</exception>
     public void Add(SavedPlayer player)
     {
-        if (PlayerListNode is null) throw Invalid();
+        if (this.PlayerListNode is null) throw this.Invalid();
 
-        _players.Add(player.Token, player);
+        this._players.Add(player.Token, player);
 
-        if (TrialInfoNode is null)
-            PlayerListNode.Add(player.Element);
+        if (this.TrialInfoNode is null)
+            this.PlayerListNode.Add(player.Element);
         else
-            TrialInfoNode.AddBeforeSelf(player.Element);
+            this.TrialInfoNode.AddBeforeSelf(player.Element);
     }
 
     /// <summary>
@@ -59,8 +59,8 @@ public class PlayerListXml : ConfigFile
     /// <exception cref="InvalidConfigException">The config file is structured incorrectly</exception>
     public void Remove(SavedPlayer player)
     {
-        if (PlayerListNode is null) throw Invalid();
-        _players.Remove(player.Token);
+        if (this.PlayerListNode is null) throw this.Invalid();
+        this._players.Remove(player.Token);
         player.Element.Remove();
     }
 
@@ -78,9 +78,9 @@ public class PlayerListXml : ConfigFile
     protected override async Task _LoadAsync()
     {
         await base._LoadAsync();
-        if (Document is null) throw Invalid();
-        if (PlayerListNode is null) throw Invalid();
-        _players = PlayerListNode
+        if (this.Document is null) throw this.Invalid();
+        if (this.PlayerListNode is null) throw this.Invalid();
+        this._players = this.PlayerListNode
             .XPathSelectElements("//Player")
             .Select(el => new SavedPlayer(el))
             .ToDictionary(p => p.Token);
@@ -92,7 +92,7 @@ public class PlayerListXml : ConfigFile
 
         protected InvalidConfigException Invalid()
         {
-            return new InvalidConfigException(Element.ToString());
+            return new InvalidConfigException(this.Element.ToString());
         }
     }
 
@@ -106,24 +106,24 @@ public class PlayerListXml : ConfigFile
         {
             get
             {
-                if (Element.Attribute("Number")?.Value is { } rawNumber &&
+                if (this.Element.Attribute("Number")?.Value is { } rawNumber &&
                     int.TryParse(rawNumber, out var number))
                     return number;
 
-                throw Invalid();
+                throw this.Invalid();
             }
-            set => Element.SetAttributeValue("Number", value);
+            set => this.Element.SetAttributeValue("Number", value);
         }
 
         public string Token
         {
             get
             {
-                if (Element.Attribute("Token")?.Value is { } token) return token;
+                if (this.Element.Attribute("Token")?.Value is { } token) return token;
 
-                throw Invalid();
+                throw this.Invalid();
             }
-            set => Element.SetAttributeValue("Token", value);
+            set => this.Element.SetAttributeValue("Token", value);
         }
     }
 
@@ -137,33 +137,33 @@ public class PlayerListXml : ConfigFile
         {
             get
             {
-                if (Element.Attribute("ID")?.Value is { } id) return id;
+                if (this.Element.Attribute("ID")?.Value is { } id) return id;
 
-                throw Invalid();
+                throw this.Invalid();
             }
-            set => Element.SetAttributeValue("ID", value);
+            set => this.Element.SetAttributeValue("ID", value);
         }
 
         public string Token
         {
             get
             {
-                if (Element.Attribute("Token")?.Value is { } token) return token;
+                if (this.Element.Attribute("Token")?.Value is { } token) return token;
 
-                throw Invalid();
+                throw this.Invalid();
             }
-            set => Element.SetAttributeValue("Token", value);
+            set => this.Element.SetAttributeValue("Token", value);
         }
 
         public string Code
         {
             get
             {
-                if (Element.Attribute("Code")?.Value is { } code) return code;
+                if (this.Element.Attribute("Code")?.Value is { } code) return code;
 
-                throw Invalid();
+                throw this.Invalid();
             }
-            set => Element.SetAttributeValue("Code", value);
+            set => this.Element.SetAttributeValue("Code", value);
         }
     }
 }

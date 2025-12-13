@@ -4,39 +4,42 @@ public abstract class StreamObfuscator(Stream baseStream) : Stream
 {
     protected readonly Stream BaseStream = baseStream ?? throw new ArgumentNullException(nameof(baseStream));
     protected long ProcessedPosition;
-    
-    public override bool CanRead => BaseStream.CanRead;
-    public override bool CanSeek => BaseStream.CanSeek;
-    public override bool CanWrite => BaseStream.CanWrite;
-    public override long Length => BaseStream.Length;
+
+    public override bool CanRead => this.BaseStream.CanRead;
+    public override bool CanSeek => this.BaseStream.CanSeek;
+    public override bool CanWrite => this.BaseStream.CanWrite;
+    public override long Length => this.BaseStream.Length;
 
     public override long Position
     {
-        get => BaseStream.Position;
+        get => this.BaseStream.Position;
         set
         {
-            BaseStream.Position = value;
-            ProcessedPosition = value;
+            this.BaseStream.Position = value;
+            this.ProcessedPosition = value;
         }
     }
-    
-    public override void Flush() => BaseStream.Flush();
-    
+
+    public override void Flush()
+    {
+        this.BaseStream.Flush();
+    }
+
     public override long Seek(long offset, SeekOrigin origin)
     {
-        long newPos = BaseStream.Seek(offset, origin);
-        ProcessedPosition = newPos;
+        var newPos = this.BaseStream.Seek(offset, origin);
+        this.ProcessedPosition = newPos;
         return newPos;
     }
-    
-    public override void SetLength(long value) => BaseStream.SetLength(value);
+
+    public override void SetLength(long value)
+    {
+        this.BaseStream.SetLength(value);
+    }
 
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            BaseStream.Dispose();
-        }
+        if (disposing) this.BaseStream.Dispose();
         base.Dispose(disposing);
     }
 }

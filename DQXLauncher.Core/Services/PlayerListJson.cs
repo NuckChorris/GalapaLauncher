@@ -18,6 +18,10 @@ public class PlayerListJson
     public Dictionary<string, SavedPlayer> Players { get; set; } = new();
     public TrialPlayer? Trial { get; set; }
 
+    // Added factory to allow injecting a custom SavedPlayerLoginStrategy instance.
+    public static Func<string, int, SavedPlayerLoginStrategy> SavedPlayerLoginStrategyFactory { get; set; } =
+        (token, number) => new SavedPlayerLoginStrategy(token);
+
     /// <summary>
     ///     Load and parse the PlayerList.json file into memory, creating it if it doesn't exist.
     /// </summary>
@@ -38,15 +42,11 @@ public class PlayerListJson
     public async Task SaveAsync()
     {
         // Find names for all the players which are missing them
-        foreach (var player in Players.Values.Where(p => p.Name is null)) await player.LoadName();
+        foreach (var player in this.Players.Values.Where(p => p.Name is null)) await player.LoadName();
 
         await File.WriteAllTextAsync(FilePath,
             JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
     }
-
-    // Added factory to allow injecting a custom SavedPlayerLoginStrategy instance.
-    public static Func<string, int, SavedPlayerLoginStrategy> SavedPlayerLoginStrategyFactory { get; set; } =
-        (token, number) => new SavedPlayerLoginStrategy(token, number);
 
     public class SavedPlayer
     {
@@ -60,10 +60,10 @@ public class PlayerListJson
         /// </summary>
         public async Task LoadName()
         {
-            var login = SavedPlayerLoginStrategyFactory(Token, Number - 1);
+            var login = SavedPlayerLoginStrategyFactory(this.Token, this.Number - 1);
             var step = await login.Start();
 
-            if (step is AskPassword action) Name = action.Username;
+            if (step is AskPassword action) this.Name = action.Username;
         }
     }
 

@@ -16,14 +16,13 @@ public static class CookieParser
         var flags = splitFlags
             .Skip(1)
             .Select(part => part.Trim())
-            .Where(part => !string.IsNullOrEmpty(part)).Select(
-                part =>
-                {
-                    var flagParts = part.Split('=', 2);
-                    if (flagParts.Length == 2) return new KeyValuePair<string, object>(flagParts[0], flagParts[1]);
+            .Where(part => !string.IsNullOrEmpty(part)).Select(part =>
+            {
+                var flagParts = part.Split('=', 2);
+                if (flagParts.Length == 2) return new KeyValuePair<string, object>(flagParts[0], flagParts[1]);
 
-                    return new KeyValuePair<string, object>(flagParts[0], true);
-                }).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
+                return new KeyValuePair<string, object>(flagParts[0], true);
+            }).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
 
         var expiry = ParseCookieExpiry(
             flags.TryGetValue("Max-Age", out var maxAgeObj) ? maxAgeObj as string : null,

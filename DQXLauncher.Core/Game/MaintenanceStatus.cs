@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 
 namespace DQXLauncher.Core.Game;
@@ -21,24 +22,23 @@ public class MaintenanceStatus
         request.Headers.Add("Cache-Control", "no-cache");
         var response = await httpClient.SendAsync(request);
 
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        if (response.StatusCode == HttpStatusCode.OK)
         {
             var res = await response.Content.ReadFromJsonAsync<MaintenanceResponse>();
-            
+
             if (res?.Status == "0") return (MaintenanceState.Up, res.Message);
             return (MaintenanceState.Down, res?.Message);
         }
-        
+
         return (MaintenanceState.Unknown, null);
     }
-    
+
     // This is instantiated via ReadFromJsonAsync
     // ReSharper disable once ClassNeverInstantiated.Local
     private class MaintenanceResponse
     {
-        [JsonPropertyName("status")]
-        public required string Status { get; set; }
-        [JsonPropertyName("text")]
-        public required string Message { get; set;  }
+        [JsonPropertyName("status")] public required string Status { get; set; }
+
+        [JsonPropertyName("text")] public required string Message { get; set; }
     }
 }

@@ -18,14 +18,13 @@ public class SavedPlayer(
     PlayerListXml.SavedPlayer xml,
     IPlayerCredential credential)
 {
+    private readonly IPlayerCredential _credential = credential;
+    private readonly PlayerListJson.SavedPlayer _json = json;
+    private readonly PlayerListXml.SavedPlayer _xml = xml;
     private SavedPlayerLoginStrategy? _loginStrategy;
 
     public SavedPlayerLoginStrategy LoginStrategy =>
-        _loginStrategy ??= new SavedPlayerLoginStrategy(Token, Number - 1, _credential);
-
-    private readonly IPlayerCredential _credential = credential;
-    private readonly PlayerListXml.SavedPlayer _xml = xml;
-    private readonly PlayerListJson.SavedPlayer _json = json;
+        this._loginStrategy ??= new SavedPlayerLoginStrategy(this.Token);
 
     /// <summary>
     ///     The number assigned to this player.
@@ -37,11 +36,11 @@ public class SavedPlayer(
     /// </remarks>
     public int Number
     {
-        get => _json.Number;
+        get => this._json.Number;
         set
         {
-            _xml.Number = value;
-            _json.Number = value;
+            this._xml.Number = value;
+            this._json.Number = value;
         }
     }
 
@@ -54,8 +53,8 @@ public class SavedPlayer(
     /// </remarks>
     public string? Name
     {
-        get => _json.Name;
-        set => _json.Name = value;
+        get => this._json.Name;
+        set => this._json.Name = value;
     }
 
     /// <summary>
@@ -65,7 +64,7 @@ public class SavedPlayer(
     ///     This is the same token used in the official launcher, and is stored in both the XML and JSON files. It is a
     ///     base64 string which seem to uniquely identify the user by sqexid.
     /// </remarks>
-    public string Token => _json.Token;
+    public string Token => this._json.Token;
 
     /// <summary>
     ///     The player's password, if saved.
@@ -76,8 +75,8 @@ public class SavedPlayer(
     /// </remarks>
     public string? Password
     {
-        get => _credential.Password;
-        set => _credential.Password = value;
+        get => this._credential.Password;
+        set => this._credential.Password = value;
     }
 
     /// <summary>
@@ -89,8 +88,8 @@ public class SavedPlayer(
     /// </remarks>
     public string? TotpKey
     {
-        get => _credential.TotpKey;
-        set => _credential.TotpKey = value;
+        get => this._credential.TotpKey;
+        set => this._credential.TotpKey = value;
     }
 
     /// <summary>
@@ -142,41 +141,33 @@ public class TrialPlayer
 /// </remarks>
 public class PlayerList
 {
-    /// <summary>
-    ///     The official launcher only supports 4 players. This exception is thrown when you try to add a 5th player.
-    /// </summary>
-    /// <remarks>
-    ///     Ideally we should catch it in the UI and prevent the user from adding a 5th player, so this is a last-ditch
-    ///     protection.
-    /// </remarks>
-    public class PlayerLimitReached() : Exception("Player limit reached");
-
     private readonly IPlayerCredentialFactory _credentialFactory;
-    private PlayerListXml? _xml;
-    private PlayerListJson? _json;
     private ImmutableList<string>? _credentialTokens;
-
-    public List<SavedPlayer> Players { get; private set; } = new();
+    private PlayerListJson? _json;
+    private PlayerListXml? _xml;
 
     public PlayerList(IPlayerCredentialFactory credentialFactory)
     {
         this._credentialFactory = credentialFactory;
     }
 
+    public List<SavedPlayer> Players { get; private set; } = new();
+
     /// <summary>
-    ///     Add a new player to the list by their token. This will add the player to the XML, JSON, and credential in memory but
+    ///     Add a new player to the list by their token. This will add the player to the XML, JSON, and credential in memory
+    ///     but
     ///     NOT save them to disk/credential store until you call <see cref="SaveAsync" />.
     /// </summary>
     /// <param name="token">The sqex token for a saved player</param>
     /// <returns>The SavedPlayer that was created</returns>
     public SavedPlayer Add(string token)
     {
-        var xml = new PlayerListXml.SavedPlayer { Token = token, Number = GetAvailableNumber() };
-        var json = new PlayerListJson.SavedPlayer { Token = token, Number = GetAvailableNumber() };
+        var xml = new PlayerListXml.SavedPlayer { Token = token, Number = this.GetAvailableNumber() };
+        var json = new PlayerListJson.SavedPlayer { Token = token, Number = this.GetAvailableNumber() };
         var credential = this._credentialFactory.Create(token);
 
         var player = new SavedPlayer(json, xml, credential);
-        Add(player);
+        this.Add(player);
         return player;
     }
 
@@ -187,7 +178,7 @@ public class PlayerList
     /// <param name="player">The SavedPlayer to add</param>
     public void Add(SavedPlayer player)
     {
-        Players.Add(player);
+        this.Players.Add(player);
     }
 
     /// <summary>
@@ -197,10 +188,10 @@ public class PlayerList
     /// <param name="token">The token identifying the player to remove</param>
     public void Remove(string token)
     {
-        var player = Players.ToList().Find(p => p.Token == token);
+        var player = this.Players.ToList().Find(p => p.Token == token);
         if (player is null) return;
 
-        Remove(player);
+        this.Remove(player);
     }
 
     /// <summary>
@@ -210,7 +201,7 @@ public class PlayerList
     /// <param name="player">The player to remove</param>
     public void Remove(SavedPlayer player)
     {
-        Players.Remove(player);
+        this.Players.Remove(player);
     }
 
     /// <summary>
@@ -223,26 +214,27 @@ public class PlayerList
     /// </remarks>
     public async Task SaveAsync()
     {
-        Contract.Assert(_xml is not null);
-        Contract.Assert(_json is not null);
+        Contract.Assert(this._xml is not null);
+        Contract.Assert(this._json is not null);
 
         // Save all credentials for all players
         foreach (var player in this.Players) player.SaveCredential();
 
-        await Task.WhenAll(_xml.SaveAsync(), _json.SaveAsync());
+        await Task.WhenAll(this._xml.SaveAsync(), this._json.SaveAsync());
     }
 
     /// <summary>
-    ///     Load the PlayerList from disk. This will load the XML, JSON, and credential store, then sync it all to match the XML.
+    ///     Load the PlayerList from disk. This will load the XML, JSON, and credential store, then sync it all to match the
+    ///     XML.
     /// </summary>
     public async Task LoadAsync()
     {
-        _xml = await PlayerListXml.LoadAsync();
-        _json = await PlayerListJson.LoadAsync();
+        this._xml = await PlayerListXml.LoadAsync();
+        this._json = await PlayerListJson.LoadAsync();
         this._credentialTokens = await this._credentialFactory.GetAllTokensAsync();
 
         // Sync the XML to the JSON and credential store
-        await SyncFromXml();
+        await this.SyncFromXml();
 
         var players = new List<SavedPlayer>();
         foreach (var jsonPlayer in this._json!.Players.Values)
@@ -254,15 +246,15 @@ public class PlayerList
 
         this.Players = players;
 
-        await SaveAsync();
+        await this.SaveAsync();
     }
 
     private int GetAvailableNumber()
     {
-        if (Players.Count >= 4) throw new PlayerLimitReached();
+        if (this.Players.Count >= 4) throw new PlayerLimitReached();
 
         var numberSet = new SortedSet<int> { 1, 2, 3, 4 };
-        foreach (var player in Players)
+        foreach (var player in this.Players)
             numberSet.Remove(player.Number);
 
         return numberSet.First();
@@ -270,12 +262,12 @@ public class PlayerList
 
     private async Task SyncFromXml()
     {
-        Contract.Assert(_xml is not null);
-        Contract.Assert(_json is not null);
+        Contract.Assert(this._xml is not null);
+        Contract.Assert(this._json is not null);
         Contract.Assert(this._credentialTokens is not null);
 
         // Delete credentials for any players removed from the XML file
-        var xmlTokens = _xml.Players.Keys.ToHashSet();
+        var xmlTokens = this._xml.Players.Keys.ToHashSet();
         foreach (var token in this._credentialTokens.Except(xmlTokens))
         {
             var cred = await this._credentialFactory.LoadAsync(token);
@@ -283,9 +275,9 @@ public class PlayerList
         }
 
         // Recreate JSON player list from XML file
-        _json.Players = _xml.Players.Values.Select(xmlPlayer =>
+        this._json.Players = this._xml.Players.Values.Select(xmlPlayer =>
         {
-            _json.Players.TryGetValue(xmlPlayer.Token, out var match);
+            this._json.Players.TryGetValue(xmlPlayer.Token, out var match);
 
             if (match is not null) return match;
 
@@ -295,14 +287,23 @@ public class PlayerList
                 Token = xmlPlayer.Token
             };
         }).ToDictionary(p => p.Token);
-        _json.Trial = _xml.Trial is null
+        this._json.Trial = this._xml.Trial is null
             ? null
             : new PlayerListJson.TrialPlayer
             {
-                Token = _xml.Trial.Token,
-                Id = _xml.Trial.Id,
-                Code = _xml.Trial.Code
+                Token = this._xml.Trial.Token,
+                Id = this._xml.Trial.Id,
+                Code = this._xml.Trial.Code
             };
-        await _json.SaveAsync();
+        await this._json.SaveAsync();
     }
+
+    /// <summary>
+    ///     The official launcher only supports 4 players. This exception is thrown when you try to add a 5th player.
+    /// </summary>
+    /// <remarks>
+    ///     Ideally we should catch it in the UI and prevent the user from adding a 5th player, so this is a last-ditch
+    ///     protection.
+    /// </remarks>
+    public class PlayerLimitReached() : Exception("Player limit reached");
 }
