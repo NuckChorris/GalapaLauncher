@@ -3,8 +3,10 @@ using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using DQXLauncher.Avalonia.ViewModels;
 using DQXLauncher.Avalonia.ViewModels.AppFrame;
+using DQXLauncher.Avalonia.ViewModels.LoginFrame;
 using DQXLauncher.Avalonia.Views;
 using DQXLauncher.Avalonia.Views.AppFrame;
+using DQXLauncher.Avalonia.Views.LoginFrame;
 using DryIoc;
 using Microsoft.Extensions.Logging;
 
@@ -36,6 +38,7 @@ public class ViewLocator : IDataTemplate
             AppFrameViewModel => this.ResolveView<AppFrame>(),
             HomePageViewModel => this.ResolveView<HomePage>(),
             SettingsPageViewModel => this.ResolveView<SettingsPage>(),
+            LoginFrameViewModel => this.ResolveView<LoginFrame>(),
 
             // Fallback for unknown ViewModels
             ViewModelBase vm => new TextBlock { Text = $"View not found for: {vm.GetType().Name}" },

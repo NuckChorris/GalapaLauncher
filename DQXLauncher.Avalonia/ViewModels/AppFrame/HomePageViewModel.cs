@@ -1,5 +1,8 @@
-﻿namespace DQXLauncher.Avalonia.ViewModels.AppFrame;
+﻿using DQXLauncher.Avalonia.ViewModels.LoginFrame;
 
-public class HomePageViewModel : AppPageViewModel
+namespace DQXLauncher.Avalonia.ViewModels.AppFrame;
+
+public class HomePageViewModel(LoginFrameViewModel loginFrameViewModel) : AppPageViewModel
 {
+    public LoginFrameViewModel LoginFrameViewModel { get; set; } = loginFrameViewModel;
 }

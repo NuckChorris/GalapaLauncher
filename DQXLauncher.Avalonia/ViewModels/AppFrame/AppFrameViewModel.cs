@@ -23,11 +23,12 @@ public partial class AppFrameViewModel(
     [ObservableProperty] private AppFrameTab? _selectedPage;
     [ObservableProperty] private Settings? _settings = settings;
 
-    public List<AppFrameTab> Pages { get; } = new()
-    {
-        new AppFrameTab(new Lazy<AppPageViewModel>(() => homePage.Value),
+    public List<AppFrameTab> Pages { get; } =
+    [
+        new(new Lazy<AppPageViewModel>(() => homePage.Value),
             "/Assets/Icons/solar--rocket-bold-duotone.svg"),
-        new AppFrameTab(new Lazy<AppPageViewModel>(() => settingsPage.Value),
+
+        new(new Lazy<AppPageViewModel>(() => settingsPage.Value),
             "/Assets/Icons/solar--settings-bold-duotone.svg")
-    };
+    ];
 }

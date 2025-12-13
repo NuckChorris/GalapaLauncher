@@ -48,6 +48,12 @@ internal sealed class Program
         container.Register<HomePageViewModel>(Reuse.Singleton);
         container.Register<SettingsPageViewModel>(Reuse.Singleton);
         container.Register<GamepadInputService>(Reuse.Singleton);
+        container.Register<LoginFlowState>(Reuse.Singleton);
+        container.Register<LoginNavigationService>(Reuse.Singleton);
+
+        // Register transients
+        container.Register<LoginFrameViewModel>(Reuse.Transient);
+        container.Register<LoginPageViewModel>(Reuse.Transient);
 
         // Register Settings with factory
         container.RegisterDelegate<Settings>(_ => Settings.Load(), Reuse.Singleton);
