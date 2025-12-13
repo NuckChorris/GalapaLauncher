@@ -5,7 +5,7 @@ using DQXLauncher.Avalonia.ViewModels;
 using DQXLauncher.Avalonia.ViewModels.AppFrame;
 using DQXLauncher.Avalonia.Views;
 using DQXLauncher.Avalonia.Views.AppFrame;
-using Microsoft.Extensions.DependencyInjection;
+using DryIoc;
 using Microsoft.Extensions.Logging;
 
 namespace DQXLauncher.Avalonia;
@@ -16,16 +16,16 @@ namespace DQXLauncher.Avalonia;
 /// </summary>
 public class ViewLocator : IDataTemplate
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IContainer _container;
 
-    public ViewLocator(IServiceProvider serviceProvider)
+    public ViewLocator(IContainer container)
     {
-        this._serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        this._container = container ?? throw new ArgumentNullException(nameof(container));
     }
 
     public Control? Build(object? param)
     {
-        var logger = this._serviceProvider.GetRequiredService<ILogger<ViewLocator>>();
+        var logger = this._container.Resolve<ILogger<ViewLocator>>();
         logger.LogWarning($"Building view for {param?.GetType().Name ?? "null"}");
         return param switch
         {
@@ -50,13 +50,13 @@ public class ViewLocator : IDataTemplate
     }
 
     /// <summary>
-    ///     Resolves a view from the service provider with full dependency injection support.
+    ///     Resolves a view from the container with full dependency injection support.
     ///     Falls back to Activator.CreateInstance if the view isn't registered in the container.
     /// </summary>
     private Control ResolveView<TView>() where TView : Control
     {
         // Try to get the view from DI first
-        var view = this._serviceProvider.GetService<TView>();
+        var view = this._container.Resolve<TView>(IfUnresolved.ReturnDefault);
 
         // Fallback to Activator if not registered in DI
         return view ?? Activator.CreateInstance<TView>();

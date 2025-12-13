@@ -1,23 +1,26 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Avalonia;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using DQXLauncher.Avalonia.Services;
 using DQXLauncher.Avalonia.ViewModels;
 using DQXLauncher.Avalonia.ViewModels.AppFrame;
 using DQXLauncher.Avalonia.Views;
 using DQXLauncher.Core.Game.ConfigFile;
 using DQXLauncher.Core.Services;
-using Microsoft.Extensions.DependencyInjection;
+using DryIoc;
+using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Extensions.Logging;
 using Velopack;
 using Velopack.Logging;
+using ILogger = Serilog.ILogger;
 
 namespace DQXLauncher.Avalonia;
 
 internal sealed class Program
 {
-    public static ServiceProvider Services;
+    public static IContainer Services;
 
     public static ConsoleVelopackLogger Log { get; } = new();
 
@@ -34,20 +37,39 @@ internal sealed class Program
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
 
-    private static ServiceProvider CreateServiceProvider()
+    private static IContainer CreateServiceProvider()
     {
-        ServiceCollection services = new();
-        services.AddTransient(typeof(Lazy<>), typeof(Lazier<>));
-        services.AddSingleton<MainWindow>();
-        services.AddSingleton<MainWindowViewModel>();
-        services.AddSingleton<AppFrameViewModel>();
-        services.AddSingleton<HomePageViewModel>();
-        services.AddSingleton<SettingsPageViewModel>();
-        services.AddSingleton<GamepadInputService>();
-        services.AddSingleton<Settings>(_ => Settings.Load());
-        services.AddLogging(lb => { lb.AddSerilog(BuildLogger(), true); });
+        var container = new Container();
 
-        return services.BuildServiceProvider();
+        // Register singletons
+        container.Register<MainWindow>(Reuse.Singleton);
+        container.Register<MainWindowViewModel>(Reuse.Singleton);
+        container.Register<AppFrameViewModel>(Reuse.Singleton);
+        container.Register<HomePageViewModel>(Reuse.Singleton);
+        container.Register<SettingsPageViewModel>(Reuse.Singleton);
+        container.Register<GamepadInputService>(Reuse.Singleton);
+
+        // Register Settings with factory
+        container.RegisterDelegate<Settings>(_ => Settings.Load(), Reuse.Singleton);
+
+        // Register logging
+        var logger = BuildLogger();
+        var loggerFactory = new SerilogLoggerFactory(logger, true);
+        container.RegisterInstance<ILoggerFactory>(loggerFactory);
+
+        // Register ILogger<T> using the generic CreateLogger<T> extension method
+        var createLoggerMethod = typeof(LoggerFactoryExtensions)
+            .GetMethods()
+            .First(m => m.Name == "CreateLogger" &&
+                        m.IsGenericMethodDefinition &&
+                        m.GetParameters().Length == 1);
+
+        container.Register(
+            typeof(ILogger<>),
+            made: Made.Of(FactoryMethod.Of(createLoggerMethod), Parameters.Of.Type<ILoggerFactory>()),
+            reuse: Reuse.Transient);
+
+        return container;
     }
 
     private static ILogger BuildLogger()
@@ -70,8 +92,7 @@ internal sealed class Program
         // We can't create our service provider until the Paths are configured to allow the Settings to be loaded
         // TODO: move Paths.AppData into the launcher itself (it's not core-related)
         Services = CreateServiceProvider();
-        Ioc.Default.ConfigureServices(Services);
-        var settings = Services.GetRequiredService<Settings>();
+        var settings = Services.Resolve<Settings>();
         ConfigFile.RootDirectory = settings.SaveFolderPath;
 
         return AppBuilder.Configure<App>()
@@ -80,7 +101,4 @@ internal sealed class Program
             .WithInterFont()
             .LogToTrace();
     }
-
-    // This is a hack to make Lazy<T> work with Dependency Injection
-    internal class Lazier<T>(IServiceProvider provider) : Lazy<T>(provider.GetRequiredService<T>) where T : class;
 }
