@@ -44,6 +44,7 @@ public class PlayerListJson
         // Find names for all the players which are missing them
         foreach (var player in this.Players.Values.Where(p => p.Name is null)) await player.LoadName();
 
+        Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
         await File.WriteAllTextAsync(FilePath,
             JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
     }

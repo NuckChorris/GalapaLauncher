@@ -5,6 +5,7 @@ using Moq;
 
 namespace DQXLauncher.Core.Tests.Services;
 
+[Collection("Sequential")]
 public class PlayerListJsonTests
 {
     [Fact]
@@ -54,7 +55,7 @@ public class PlayerListJsonTests
         Paths.AppData = tempDir.Path;
 
         // Arrange: Create a mock for SavedPlayerLoginStrategy.
-        var mockLoginStrategy = new Mock<SavedPlayerLoginStrategy>();
+        var mockLoginStrategy = new Mock<SavedPlayerLoginStrategy>("dummyToken") { CallBase = false };
         // Setup Step to return an AskPassword with Username "MockUser".
         mockLoginStrategy.Setup(s => s.Start())
             .ReturnsAsync(new AskPassword("MockUser"));
@@ -81,7 +82,7 @@ public class PlayerListJsonTests
         Paths.AppData = tempDir.Path;
 
         // Arrange: Create a mock for SavedPlayerLoginStrategy.
-        var mockLoginStrategy = new Mock<SavedPlayerLoginStrategy>();
+        var mockLoginStrategy = new Mock<SavedPlayerLoginStrategy>("dummyToken") { CallBase = false };
         mockLoginStrategy.Setup(s => s.Start())
             .ReturnsAsync(new AskPassword("MockUser"));
 

@@ -5,6 +5,7 @@ using DQXLauncher.TestUtilities;
 
 namespace DQXLauncher.Core.Tests.Utils;
 
+[Collection("Sequential")]
 public class CookieJarTests
 {
     // FakeHandler captures the request and returns a response with a Set-Cookie header.
