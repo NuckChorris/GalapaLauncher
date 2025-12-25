@@ -5,8 +5,10 @@ using Avalonia;
 using DQXLauncher.Avalonia.Services;
 using DQXLauncher.Avalonia.ViewModels;
 using DQXLauncher.Avalonia.ViewModels.AppFrame;
+using DQXLauncher.Avalonia.ViewModels.LoginFrame;
 using DQXLauncher.Avalonia.Views;
 using DQXLauncher.Core.Game.ConfigFile;
+using DQXLauncher.Core.Models;
 using DQXLauncher.Core.Services;
 using DryIoc;
 using Microsoft.Extensions.Logging;
@@ -50,10 +52,15 @@ internal sealed class Program
         container.Register<GamepadInputService>(Reuse.Singleton);
         container.Register<LoginFlowState>(Reuse.Singleton);
         container.Register<LoginNavigationService>(Reuse.Singleton);
+        container.Register<IPlayerCredentialFactory, WindowsCredentialManagerFactory>(Reuse.Singleton);
+        container.Register<PlayerList>(Reuse.Singleton);
 
         // Register transients
         container.Register<LoginFrameViewModel>(Reuse.Transient);
         container.Register<LoginPageViewModel>(Reuse.Transient);
+        container.Register<PlayerSelectPageViewModel>(Reuse.Transient);
+        container.Register<AskUsernamePasswordPageViewModel>(Reuse.Transient);
+        container.Register<AskPasswordPageViewModel>(Reuse.Transient);
 
         // Register Settings with factory
         container.RegisterDelegate<Settings>(_ => Settings.Load(), Reuse.Singleton);

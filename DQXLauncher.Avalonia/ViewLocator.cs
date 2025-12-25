@@ -35,10 +35,15 @@ public class ViewLocator : IDataTemplate
 
             // Pattern match each ViewModel to its corresponding View
             MainWindowViewModel => this.ResolveView<MainWindow>(),
+            // AppFrame
             AppFrameViewModel => this.ResolveView<AppFrame>(),
             HomePageViewModel => this.ResolveView<HomePage>(),
             SettingsPageViewModel => this.ResolveView<SettingsPage>(),
+            // LoginFrame
             LoginFrameViewModel => this.ResolveView<LoginFrame>(),
+            AskUsernamePasswordPageViewModel => this.ResolveView<AskUsernamePasswordPage>(),
+            AskPasswordPageViewModel => this.ResolveView<AskPasswordPage>(),
+            PlayerSelectPageViewModel => this.ResolveView<PlayerSelectPage>(),
 
             // Fallback for unknown ViewModels
             ViewModelBase vm => new TextBlock { Text = $"View not found for: {vm.GetType().Name}" },

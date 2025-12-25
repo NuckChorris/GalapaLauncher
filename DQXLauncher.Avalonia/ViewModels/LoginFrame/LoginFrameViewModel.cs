@@ -1,5 +1,6 @@
 ﻿using System;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DQXLauncher.Avalonia.Services;
 using DQXLauncher.Core.Game.LoginStrategy;
 
@@ -7,26 +8,40 @@ namespace DQXLauncher.Avalonia.ViewModels.LoginFrame;
 
 public partial class LoginFrameViewModel : ObservableObject
 {
+    private readonly Func<AskPasswordPageViewModel> _askPasswordPage;
     private readonly Func<AskUsernamePasswordPageViewModel> _askUsernamePasswordPage;
     private readonly Func<PlayerSelectPageViewModel> _playerSelectPage;
+    [ObservableProperty] private bool _canReturnToPlayerSelect;
     [ObservableProperty] private bool _isTransitionReversed;
     [ObservableProperty] private LoginPageViewModel _page;
 
-    public LoginFrameViewModel(LoginNavigationService login, PlayerSelectPageViewModel page,
+    public LoginFrameViewModel(LoginNavigationService login,
         Func<AskUsernamePasswordPageViewModel> askUsernamePasswordPage,
-        Func<PlayerSelectPageViewModel> playerSelectPage)
+        Func<PlayerSelectPageViewModel> playerSelectPage,
+        Func<AskPasswordPageViewModel> askPasswordPage)
     {
         this._askUsernamePasswordPage = askUsernamePasswordPage;
         this._playerSelectPage = playerSelectPage;
-        this.Page = page;
+        this._askPasswordPage = askPasswordPage;
+        this.Page = this.PageForStep(null);
         login.StepChanged += (_, stepChange) =>
         {
+            this.CanReturnToPlayerSelect = true;
             this.IsTransitionReversed = stepChange.Direction == LoginNavigationService.StepChangeDirection.Backward;
             this.Page = this.PageForStep(stepChange.Step);
         };
     }
 
-    private LoginPageViewModel PageForStep(LoginStep step)
+
+    [RelayCommand]
+    public void ReturnToPlayerSelect()
+    {
+        this.CanReturnToPlayerSelect = false;
+        this.IsTransitionReversed = true;
+        this.Page = this.PageForStep(null);
+    }
+
+    private LoginPageViewModel PageForStep(LoginStep? step)
     {
         return step switch
         {

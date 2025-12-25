@@ -1,11 +1,13 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DQXLauncher.Avalonia.Services;
 using DQXLauncher.Core.Game.LoginStrategy;
 using DQXLauncher.Core.Models;
 
-namespace DQXLauncher.Avalonia.ViewModels;
+namespace DQXLauncher.Avalonia.ViewModels.LoginFrame;
 
 public abstract class PlayerListItem
 {
@@ -29,40 +31,30 @@ public class NewPlayerItem : PlayerListItem
     public override NewPlayerLoginStrategy LoginStrategy => new();
 }
 
-public partial class PlayerListViewModel(PlayerList playerList) : ObservableObject
+public partial class PlayerSelectPageViewModel(
+    LoginNavigationService login,
+    LoginFlowState flow,
+    PlayerList list
+) : LoginPageViewModel
 {
-    private PlayerList PlayerList { get; } = playerList;
-    public ObservableCollection<PlayerListItem> List { get; } = new();
+    [ObservableProperty] private ObservableCollection<PlayerListItem> _players = new();
 
     [RelayCommand]
-    public async Task LoadAsync()
+    public async Task Load()
     {
-        await this.PlayerList.LoadAsync();
-        this.RebuildDisplayPlayers();
+        await list.LoadAsync();
+        this.Players =
+            new ObservableCollection<PlayerListItem>(
+                list.Players
+                    .Select(player => new SavedPlayerItem { Player = player })
+                    .Append<PlayerListItem>(new NewPlayerItem()));
     }
 
-    public SavedPlayer AddPlayer(string token, string? name)
+    [RelayCommand]
+    public async Task SelectPlayer(PlayerListItem player)
     {
-        var player = this.PlayerList.Add(token);
-        if (name is not null) player.Name = name;
-
-        this.List.Add(new SavedPlayerItem { Player = player });
-
-        return player;
-    }
-
-    public async Task SaveAsync()
-    {
-        await this.PlayerList.SaveAsync();
-    }
-
-    private void RebuildDisplayPlayers()
-    {
-        this.List.Clear();
-
-        foreach (var savedPlayer in this.PlayerList.Players)
-            this.List.Add(new SavedPlayerItem { Player = savedPlayer });
-
-        if (this.PlayerList.Players.Count < 4) this.List.Add(new NewPlayerItem());
+        flow.Strategy = player.LoginStrategy;
+        var step = await player.LoginStrategy.Start();
+        login.Forward(step);
     }
 }
