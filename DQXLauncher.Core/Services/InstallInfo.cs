@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.IO;
 using Microsoft.Win32;
 
-namespace DQXLauncher.Avalonia.Services;
+namespace DQXLauncher.Core.Services;
 
 public static class InstallInfo
 {

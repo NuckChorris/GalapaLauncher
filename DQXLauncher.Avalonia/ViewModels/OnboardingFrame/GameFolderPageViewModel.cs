@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DQXLauncher.Avalonia.Services;
+using DQXLauncher.Core.Services;
 
 namespace DQXLauncher.Avalonia.ViewModels.OnboardingFrame;
 

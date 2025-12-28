@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using DQXLauncher.Avalonia.Services;
-using DQXLauncher.Avalonia.Tests.Helpers;
 using DQXLauncher.Core.Services;
 using DQXLauncher.TestUtilities;
 
-namespace DQXLauncher.Avalonia.Tests.Services;
+namespace DQXLauncher.Core.Tests.Services;
 
+[Collection("Settings")]
 public class SettingsTests : IDisposable
 {
     private readonly TempDirectory _tempDir;
@@ -206,9 +205,9 @@ public class SettingsTests : IDisposable
     [Fact]
     public void Save_CreatesDirectoryIfNotExists()
     {
-        // Arrange
-        // Delete the AppData directory if it exists
-        if (Directory.Exists(Paths.AppData)) Directory.Delete(Paths.AppData, true);
+        // Arrange - Use a subdirectory that doesn't exist yet
+        var subDir = Path.Combine(this._tempDir.Path, "NewSubDir");
+        Paths.AppData = subDir;
 
         var settings = new Settings
         {

@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace DQXLauncher.Avalonia.Tests.Helpers;
+namespace DQXLauncher.TestUtilities;
 
 /// <summary>
 ///     Helper class to track PropertyChanged events on INotifyPropertyChanged objects during tests.

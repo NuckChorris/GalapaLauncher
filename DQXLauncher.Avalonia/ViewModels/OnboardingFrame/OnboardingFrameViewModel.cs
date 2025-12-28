@@ -1,6 +1,6 @@
 ﻿using System;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DQXLauncher.Avalonia.Services;
+using DQXLauncher.Core.Services;
 using Page = DQXLauncher.Avalonia.Views.OnboardingFrame;
 
 namespace DQXLauncher.Avalonia.ViewModels.OnboardingFrame;

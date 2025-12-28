@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DQXLauncher.Avalonia.Services;
+using DQXLauncher.Core.Services;
 
 namespace DQXLauncher.Avalonia.ViewModels.AppFrame;
 

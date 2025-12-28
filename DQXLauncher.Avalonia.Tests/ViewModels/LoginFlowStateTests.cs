@@ -1,6 +1,6 @@
-using DQXLauncher.Avalonia.Tests.Helpers;
 using DQXLauncher.Avalonia.ViewModels;
 using DQXLauncher.Core.Game.LoginStrategy;
+using DQXLauncher.TestUtilities;
 using Moq;
 
 namespace DQXLauncher.Avalonia.Tests.ViewModels;

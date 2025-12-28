@@ -1,11 +1,8 @@
-﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DQXLauncher.Core.Services;
 
-namespace DQXLauncher.Avalonia.Services;
+namespace DQXLauncher.Core.Services;
 
 public partial class Settings : ObservableValidator
 {
@@ -16,7 +13,7 @@ public partial class Settings : ObservableValidator
 
     [ObservableProperty] [Required] private bool? _errorReporting;
 
-    private static readonly string SettingsPath = Path.Combine(Paths.AppData, "Settings.json");
+    private static string SettingsPath => Path.Combine(Paths.AppData, "Settings.json");
 
     private static Settings GetDefaults()
     {
@@ -33,8 +30,15 @@ public partial class Settings : ObservableValidator
     {
         if (File.Exists(SettingsPath))
         {
-            var json = File.ReadAllText(SettingsPath);
-            return JsonSerializer.Deserialize<Settings>(json) ?? GetDefaults();
+            try
+            {
+                var json = File.ReadAllText(SettingsPath);
+                return JsonSerializer.Deserialize<Settings>(json) ?? GetDefaults();
+            }
+            catch (JsonException)
+            {
+                return GetDefaults();
+            }
         }
 
         return GetDefaults();
