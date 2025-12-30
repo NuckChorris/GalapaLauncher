@@ -1,4 +1,4 @@
-using Galapa.Core.Game.ConfigFile;
+using Galapa.Core.Configuration;
 using Galapa.TestUtilities;
 
 namespace Galapa.Core.Tests.Game.ConfigFile;

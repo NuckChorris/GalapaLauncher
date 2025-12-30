@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Galapa.Core.Services;
+namespace Galapa.Core.Configuration;
 
 public partial class Settings : ObservableValidator
 {

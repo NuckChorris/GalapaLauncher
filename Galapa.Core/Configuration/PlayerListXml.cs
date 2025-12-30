@@ -3,7 +3,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using Galapa.Core.StreamObfuscator;
 
-namespace Galapa.Core.Game.ConfigFile;
+namespace Galapa.Core.Configuration;
 
 public class PlayerListXml : ConfigFile
 {

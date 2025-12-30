@@ -3,19 +3,13 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using Galapa.Core.Services;
+using Galapa.Core.Configuration;
 
 namespace Galapa.Core.Game;
 
-public class Launcher
+public class Launcher(Settings settings)
 {
     private static readonly char[] SqEx = "SqEx".ToCharArray();
-    private readonly Settings _settings;
-
-    public Launcher(Settings settings)
-    {
-        this._settings = settings;
-    }
 
     public string? SessionId { get; set; }
 
@@ -28,12 +22,12 @@ public class Launcher
     public Task LaunchGame()
     {
         if (this.SessionId is null) throw new InvalidOperationException("SessionId is null");
-        if (this._settings.GameFolderPath is null) throw new InvalidOperationException("GameFolderPath is null");
+        if (settings.GameFolderPath is null) throw new InvalidOperationException("GameFolderPath is null");
 
-        var gamePath = Path.Combine(this._settings.GameFolderPath, "game", "DQXGame.exe");
+        var gamePath = Path.Combine(settings.GameFolderPath, "game", "DQXGame.exe");
 
         var process = new Process();
-        process.StartInfo.WorkingDirectory = Path.Combine(this._settings.GameFolderPath, "game");
+        process.StartInfo.WorkingDirectory = Path.Combine(settings.GameFolderPath, "game");
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.FileName = gamePath;
         process.StartInfo.Arguments = this.GetArguments();

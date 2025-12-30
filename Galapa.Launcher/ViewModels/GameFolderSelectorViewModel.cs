@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Galapa.Core.Services;
+using Galapa.Core.Configuration;
 
 namespace Galapa.Launcher.ViewModels;
 

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
-using Galapa.Core.Game.ConfigFile;
+using Galapa.Core.Configuration;
 using Galapa.Core.Game.LoginStrategy;
-using Galapa.Core.Services;
+using Galapa.Core.Configuration;
 
 namespace Galapa.Core.Models;
 

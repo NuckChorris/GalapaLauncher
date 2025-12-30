@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Galapa.Core.Models;
-using Galapa.Core.Services;
+using Galapa.Core.Configuration;
 using Galapa.Launcher.Models;
 
 namespace Galapa.Launcher.Services;

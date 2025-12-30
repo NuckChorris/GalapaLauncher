@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net;
 using System.Text.Json;
-using Galapa.Core.Services;
+using Galapa.Core.Configuration;
 
 namespace Galapa.Core.Utils;
 

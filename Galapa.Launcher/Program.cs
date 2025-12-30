@@ -2,9 +2,9 @@
 using System.Linq;
 using Avalonia;
 using DryIoc;
-using Galapa.Core.Game.ConfigFile;
+using Galapa.Core.Configuration;
 using Galapa.Core.Models;
-using Galapa.Core.Services;
+using Galapa.Core.Configuration;
 using Galapa.Launcher.Services;
 using Galapa.Launcher.ViewModels;
 using Galapa.Launcher.ViewModels.AppFrame;

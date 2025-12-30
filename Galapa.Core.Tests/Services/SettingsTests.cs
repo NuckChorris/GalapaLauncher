@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Galapa.Core.Services;
+using Galapa.Core.Configuration;
 using Galapa.TestUtilities;
 
 namespace Galapa.Core.Tests.Services;

@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Galapa.Core.Game.LoginStrategy;
 
-namespace Galapa.Core.Services;
+namespace Galapa.Core.Configuration;
 
 /// <summary>
 ///     Wraps access to the PlayerListJson.json file we use instead of dqxPlayerList.xml

@@ -1,6 +1,6 @@
 ﻿using System;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Galapa.Core.Services;
+using Galapa.Core.Configuration;
 using Page = Galapa.Launcher.Views.OnboardingFrame;
 
 namespace Galapa.Launcher.ViewModels.OnboardingFrame;

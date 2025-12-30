@@ -1,5 +1,5 @@
 using Galapa.Core.Game.LoginStrategy;
-using Galapa.Core.Services;
+using Galapa.Core.Configuration;
 using Galapa.TestUtilities;
 using Moq;
 

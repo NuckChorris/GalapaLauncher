@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Galapa.Core.Services;
+using Galapa.Core.Configuration;
 
 namespace Galapa.Launcher.ViewModels.OnboardingFrame;
 

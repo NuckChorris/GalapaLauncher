@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Galapa.Core.Services;
+using Galapa.Core.Configuration;
 using Galapa.Core.Utils;
 using Galapa.TestUtilities;
 

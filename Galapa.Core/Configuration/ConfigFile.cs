@@ -3,7 +3,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Galapa.Core.Utils;
 
-namespace Galapa.Core.Game.ConfigFile;
+namespace Galapa.Core.Configuration;
 
 public class InvalidConfigException(string fileContents) : Exception("Invalid config")
 {

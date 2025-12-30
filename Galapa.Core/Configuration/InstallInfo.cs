@@ -1,6 +1,6 @@
 using Microsoft.Win32;
 
-namespace Galapa.Core.Services;
+namespace Galapa.Core.Configuration;
 
 public static class InstallInfo
 {

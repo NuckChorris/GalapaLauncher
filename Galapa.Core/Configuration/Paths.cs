@@ -1,4 +1,4 @@
-﻿namespace Galapa.Core.Services;
+﻿namespace Galapa.Core.Configuration;
 
 public static class Paths
 {
