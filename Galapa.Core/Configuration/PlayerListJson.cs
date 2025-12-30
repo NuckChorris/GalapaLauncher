@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using Galapa.Core.Game.LoginStrategy;
+using Galapa.Core.Game.Authentication;
 
 namespace Galapa.Core.Configuration;
 

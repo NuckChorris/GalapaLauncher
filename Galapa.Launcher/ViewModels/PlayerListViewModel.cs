@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Galapa.Core.Game.LoginStrategy;
+using Galapa.Core.Game.Authentication;
 using Galapa.Core.Models;
 
 namespace Galapa.Launcher.ViewModels;

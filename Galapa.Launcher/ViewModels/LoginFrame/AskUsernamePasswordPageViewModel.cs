@@ -1,4 +1,4 @@
-﻿using Galapa.Core.Game.LoginStrategy;
+﻿using Galapa.Core.Game.Authentication;
 
 namespace Galapa.Launcher.ViewModels.LoginFrame;
 

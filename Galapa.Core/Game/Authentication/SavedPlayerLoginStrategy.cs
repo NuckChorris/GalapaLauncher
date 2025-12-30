@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
 using Galapa.Core.Utils.WebClient;
 
-namespace Galapa.Core.Game.LoginStrategy;
+namespace Galapa.Core.Game.Authentication;
 
 public class SavedPlayerLoginStrategy(string token) : LoginStrategy, ILoginStepHandler<PasswordAction>
 {

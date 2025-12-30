@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using System.Text;
-using Galapa.Core.Game.LoginStrategy;
+using Galapa.Core.Game.Authentication;
 
 namespace Galapa.Core.Tests.Game.LoginStrategy;
 

@@ -1,7 +1,7 @@
 ﻿using Galapa.Core.Utils.WebClient;
 using HtmlAgilityPack;
 
-namespace Galapa.Core.Game.LoginStrategy;
+namespace Galapa.Core.Game.Authentication;
 
 public record LoginResponse
 {

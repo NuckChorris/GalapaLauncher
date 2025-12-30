@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using Galapa.Core.Models;
 
-namespace Galapa.Core.Services;
+namespace Galapa.Core.Game;
 
 public interface IPlayerCredentialFactory
 {

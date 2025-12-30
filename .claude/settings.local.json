@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet restore:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)",
+      "Bash(ls -la \"D:\\Code\\Galapa\\Galapa.Launcher\"\" | grep -v \"^d \")",
+      "Bash(dir:*)",
+      "Bash(dotnet build-server:*)"
+    ]
+  }
+}

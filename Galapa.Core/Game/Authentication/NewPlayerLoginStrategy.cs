@@ -1,21 +1,20 @@
 ﻿using System.Diagnostics.Contracts;
 using Galapa.Core.Utils.WebClient;
 
-namespace Galapa.Core.Game.LoginStrategy;
+namespace Galapa.Core.Game.Authentication;
 
-public class GuestLoginStrategy : LoginStrategy, ILoginStepHandler<UsernamePasswordAction>
+public class NewPlayerLoginStrategy : LoginStrategy, ILoginStepHandler<UsernamePasswordAction>
 {
     private Type? _expectedActionType;
     private WebForm? _loginForm;
 
     public override async Task<LoginStep> Start()
     {
-        // Load the login form
         try
         {
             this._loginForm = await this.GetLoginForm(new Dictionary<string, string>
             {
-                { "dqxmode", "3" } // Guest mode
+                { "dqxmode", "1" }
             });
         }
         catch (Exception)
@@ -28,7 +27,7 @@ public class GuestLoginStrategy : LoginStrategy, ILoginStepHandler<UsernamePassw
         return new AskUsernamePassword();
     }
 
-    public virtual async Task<LoginStep> Step(UsernamePasswordAction action)
+    public async Task<LoginStep> Step(UsernamePasswordAction action)
     {
         Contract.Assert(this._expectedActionType == typeof(UsernamePasswordAction));
         Contract.Assert(this._loginForm is not null);
@@ -52,8 +51,7 @@ public class GuestLoginStrategy : LoginStrategy, ILoginStepHandler<UsernamePassw
             return new DisplayError("Login failed", new AskUsernamePassword(action.Username, action.Password));
         }
 
-        return new LoginCompleted(response.SessionId);
-
-        // TODO: handle 2FA
+        return new LoginCompleted(response.SessionId)
+            { Token = response.Token, Username = action.Username, Password = action.Password };
     }
 }

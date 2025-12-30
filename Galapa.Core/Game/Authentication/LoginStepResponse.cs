@@ -1,4 +1,4 @@
-﻿namespace Galapa.Core.Game.LoginStrategy;
+﻿namespace Galapa.Core.Game.Authentication;
 
 public abstract record LoginStepAction;
 

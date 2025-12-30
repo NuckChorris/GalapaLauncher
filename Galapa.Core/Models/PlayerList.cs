@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
 using Galapa.Core.Configuration;
-using Galapa.Core.Game.LoginStrategy;
+using Galapa.Core.Game.Authentication;
 using Galapa.Core.Configuration;
 
 namespace Galapa.Core.Models;

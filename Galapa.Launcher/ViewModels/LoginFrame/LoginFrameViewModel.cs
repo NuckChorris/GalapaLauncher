@@ -1,7 +1,7 @@
 ﻿using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Galapa.Core.Game.LoginStrategy;
+using Galapa.Core.Game.Authentication;
 using Galapa.Launcher.Services;
 
 namespace Galapa.Launcher.ViewModels.LoginFrame;

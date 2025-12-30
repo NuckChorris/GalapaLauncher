@@ -1,6 +1,6 @@
 ﻿using Galapa.Core.Models;
 
-namespace Galapa.Core.Game.LoginStrategy;
+namespace Galapa.Core.Game.Authentication;
 
 public class AutoLoginStrategy(SavedPlayerLoginStrategy strategy, IPlayerCredential credential)
     : LoginStrategy, ILoginStepHandler<PasswordAction>
