@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Page
+    x:Class="Galapa.Toolbox.Views.SaveExplorerPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:vm="using:Galapa.Toolbox.ViewModels">
+
+    <Page.Resources>
+        <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
+    </Page.Resources>
+
+    <Grid>
+        <TreeView ItemsSource="{x:Bind Items, Mode=OneWay}">
+            <TreeView.ItemTemplate>
+                <DataTemplate x:DataType="vm:SaveExplorerItem">
+                    <TreeViewItem ItemsSource="{x:Bind Children, Mode=OneWay}"
+                                  ContextRequested="UIElement_OnContextRequested">
+                        <StackPanel Orientation="Horizontal">
+                            <controls:SwitchPresenter TargetType="x:Boolean" Value="{x:Bind IsDirectory}">
+                                <controls:Case Value="True">
+                                    <SymbolIcon Symbol="Folder" />
+                                </controls:Case>
+                                <controls:Case Value="False">
+                                    <SymbolIcon Symbol="Document" />
+                                </controls:Case>
+                            </controls:SwitchPresenter>
+                            <TextBlock Margin="0,0,10,0" />
+                            <TextBlock Text="{x:Bind Name, Mode=OneWay}" />
+                            <TextBlock Text="{x:Bind DeobfuscatedName, Mode=OneWay}"
+                                       Visibility="{x:Bind DeobfuscatedName, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
+                                       Opacity="0.6" Margin="20, 0, 0, 0" />
+                        </StackPanel>
+                    </TreeViewItem>
+                </DataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+    </Grid>
+</Page>

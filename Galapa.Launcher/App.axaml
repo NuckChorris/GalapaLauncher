@@ -1,0 +1,17 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="using:Galapa.Launcher.Converters"
+             x:Class="Galapa.Launcher.App"
+             RequestedThemeVariant="Default">
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <!-- ViewLocator is now configured in code-behind to support dependency injection -->
+
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
+
+    <Application.Resources>
+        <conv:BoolToObjectOrNullConverter x:Key="BoolToObjectOrNull" />
+    </Application.Resources>
+</Application>

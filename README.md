@@ -1,18 +1,19 @@
 ﻿<h1 align="center">
   <img src=".github/assets/logo.svg" alt="" width="100">
   <br>
-  DQXLauncher
+  GalapaLauncher
 </h1>
 
-DQXLauncher is a simple, modern launcher for the Dragon Quest X MMORPG. It is built with WinUI 3 and supports the latest
-version of Windows 10 and Windows 11. It is designed to be lightweight and launch quickly, and has the lofty goal to
-eventually replace DQXConfig.exe, DQXLauncher.exe, DQXUpdater.exe, and [DQXClarity.exe][clarity] with a single
-application which makes the game easy to play for anyone, anywhere.
+GalapaLauncher is a simple, modern launcher for the Dragon Quest X MMORPG. It is built with Avalonia
+and supported on Windows 10+ and Proton. It is designed to start quickly, use minimal resources, and
+support multiple languages. It has the lofty goal to eventually provide replacements or automatic
+management/installation for all support programs for DQX (Updater, Launcher, Config,
+[Clarity][clarity], etc.) so that anyone can easily play DQX, anywhere, in any language.
 
 [clarity]: https://github.com/dqx-translation-project/dqxclarity
 
 ## Current State
-DQXLauncher is currently alpha-quality software and is not yet feature complete or stable. Use at your own risk.
+Galapalauncher is currently alpha-quality software and is not yet feature complete or stable. Use at your own risk.
 
 ⚠️ **Back up your save folder!** That's `C:\Users\<username>\Documents\My Games\Dragon Quest X` by default.
 
