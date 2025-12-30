@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
-using Galapa.Core.Utils.WebClient;
+using Galapa.Core.Web;
 using HtmlAgilityPack;
 
-namespace Galapa.Core.Hiroba;
+namespace Galapa.Core.Web.Hiroba;
 
 public partial class BannerImage
 {

@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Galapa.Core.Utils.WebClient;
+namespace Galapa.Core.Web;
 
 /// <summary>
 ///     Provides an HttpClient configured to use a cookie jar and roughly emulate the behavior of the original launcher's

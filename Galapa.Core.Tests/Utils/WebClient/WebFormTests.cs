@@ -1,4 +1,4 @@
-﻿using Galapa.Core.Utils.WebClient;
+﻿using Galapa.Core.Web;
 using HtmlAgilityPack;
 
 namespace Galapa.Core.Tests.Utils.WebClient;

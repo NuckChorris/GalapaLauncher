@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using HtmlAgilityPack;
 
-namespace Galapa.Core.Utils.WebClient;
+namespace Galapa.Core.Web;
 
 public class WebForm
 {

@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.Contracts;
-using Galapa.Core.Utils.WebClient;
+using Galapa.Core.Web;
 
 namespace Galapa.Core.Game.Authentication;
 
