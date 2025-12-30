@@ -9,7 +9,7 @@ public class PlayerListXmlTests
     public async Task Load_DefaultFile_CreatesDefaultStructure()
     {
         using var tempDir = new TempDirectory();
-        Core.Game.ConfigFile.ConfigFile.RootDirectory = tempDir.Path;
+        Configuration.ConfigFile.RootDirectory = tempDir.Path;
 
         var playerList = await PlayerListXml.LoadAsync();
 
@@ -22,7 +22,7 @@ public class PlayerListXmlTests
     public async Task AddPlayer_SavedPlayer_PersistsToFile()
     {
         using var tempDir = new TempDirectory();
-        Core.Game.ConfigFile.ConfigFile.RootDirectory = tempDir.Path;
+        Configuration.ConfigFile.RootDirectory = tempDir.Path;
 
         var playerList = await PlayerListXml.LoadAsync();
         playerList.Add(new PlayerListXml.SavedPlayer
@@ -43,7 +43,7 @@ public class PlayerListXmlTests
     public async Task Trial_Set_PersistsToFile()
     {
         using var tempDir = new TempDirectory();
-        Core.Game.ConfigFile.ConfigFile.RootDirectory = tempDir.Path;
+        Configuration.ConfigFile.RootDirectory = tempDir.Path;
 
         var playerList = await PlayerListXml.LoadAsync();
         playerList.Trial = new PlayerListXml.TrialPlayer
@@ -65,7 +65,7 @@ public class PlayerListXmlTests
     public async Task Filename_HasExpectedValue()
     {
         using var tempDir = new TempDirectory();
-        Core.Game.ConfigFile.ConfigFile.RootDirectory = tempDir.Path;
+        Configuration.ConfigFile.RootDirectory = tempDir.Path;
 
         var playerList = await PlayerListXml.LoadAsync();
         var expectedFilename = Path.Combine(tempDir.Path, "cxjYxsgheGzie!iyx");

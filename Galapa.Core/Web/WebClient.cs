@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Text;
+using Galapa.Core.Utils;
 
 namespace Galapa.Core.Web;
 

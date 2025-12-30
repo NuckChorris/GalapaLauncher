@@ -5,7 +5,7 @@ using Galapa.TestUtilities;
 using Moq;
 using Moq.Protected;
 // We have a namespace conflict lol
-using WebClientNS = Galapa.Core.Utils.WebClient;
+using WebClientNS = Galapa.Core.Web;
 
 namespace Galapa.Core.Tests.Utils.WebClient;
 
