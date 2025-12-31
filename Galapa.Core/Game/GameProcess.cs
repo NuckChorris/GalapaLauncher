@@ -7,9 +7,10 @@ using Galapa.Core.Configuration;
 
 namespace Galapa.Core.Game;
 
-public class Launcher(Settings settings)
+public class GameProcess(Settings settings)
 {
     private static readonly char[] SqEx = "SqEx".ToCharArray();
+    private Process? _process;
 
     public string? SessionId { get; set; }
 
@@ -19,21 +20,42 @@ public class Launcher(Settings settings)
     // But I'm scared to remove it
     public bool UseApartmentThreaded { get; set; } = true;
 
-    public Task LaunchGame()
+    public bool HasExited => this._process?.HasExited ?? true;
+
+    public event EventHandler? Exited;
+
+    public void Start()
     {
         if (this.SessionId is null) throw new InvalidOperationException("SessionId is null");
         if (settings.GameFolderPath is null) throw new InvalidOperationException("GameFolderPath is null");
 
         var gamePath = Path.Combine(settings.GameFolderPath, "game", "DQXGame.exe");
 
-        var process = new Process();
-        process.StartInfo.WorkingDirectory = Path.Combine(settings.GameFolderPath, "game");
-        process.StartInfo.UseShellExecute = false;
-        process.StartInfo.FileName = gamePath;
-        process.StartInfo.Arguments = this.GetArguments();
-        process.Start();
+        this._process = new Process();
+        this._process.StartInfo.WorkingDirectory = Path.Combine(settings.GameFolderPath, "game");
+        this._process.StartInfo.UseShellExecute = false;
+        this._process.StartInfo.FileName = gamePath;
+        this._process.StartInfo.Arguments = this.GetArguments();
+        this._process.EnableRaisingEvents = true;
+        this._process.Exited += this.OnProcessExited;
+        this._process.Start();
+    }
 
-        return Task.CompletedTask;
+    public async Task WaitForExitAsync()
+    {
+        if (this._process is null) return;
+        await this._process.WaitForExitAsync();
+    }
+
+    public void Kill()
+    {
+        if (this._process is null || this._process.HasExited) return;
+        this._process.Kill();
+    }
+
+    private void OnProcessExited(object? sender, EventArgs e)
+    {
+        this.Exited?.Invoke(this, EventArgs.Empty);
     }
 
     private string GetArguments()
