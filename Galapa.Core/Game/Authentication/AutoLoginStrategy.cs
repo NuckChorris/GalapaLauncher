@@ -30,7 +30,13 @@ public class AutoLoginStrategy(SavedPlayerLoginStrategy strategy, IPlayerCredent
         var action = this.ActionForStep(step);
         while (action is not null)
         {
-            step = await base.Step(action);
+            // We have to narrow our action types here to dispatch to the right type!
+            step = action switch
+            {
+                PasswordAction passwordAction => await strategy.Step(passwordAction),
+                OtpAction otpAction => await strategy.Step(otpAction),
+                _ => throw new InvalidOperationException($"Unknown action type: {action.GetType()}")
+            };
             action = this.ActionForStep(step);
         }
 
