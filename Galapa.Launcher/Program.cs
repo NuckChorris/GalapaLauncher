@@ -60,6 +60,8 @@ internal sealed class Program
         container.Register<PlayerSelectPageViewModel>(Reuse.Transient);
         container.Register<AskUsernamePasswordPageViewModel>(Reuse.Transient);
         container.Register<AskPasswordPageViewModel>(Reuse.Transient);
+        container.Register<LoginCompletedPageViewModel>(Reuse.Transient);
+        container.Register<GameProcess>(Reuse.Transient);
 
         // Register Settings with factory
         container.RegisterDelegate<Settings>(_ => Settings.Load(), Reuse.Singleton);

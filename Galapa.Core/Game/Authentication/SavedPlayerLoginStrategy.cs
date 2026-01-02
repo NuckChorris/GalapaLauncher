@@ -8,6 +8,7 @@ public class SavedPlayerLoginStrategy(string token) : LoginStrategy, ILoginStepH
     private Type? _expectedActionType;
     private WebForm? _loginForm;
     private string? _username;
+    public string Token => token;
 
     public override async Task<LoginStep> Start()
     {

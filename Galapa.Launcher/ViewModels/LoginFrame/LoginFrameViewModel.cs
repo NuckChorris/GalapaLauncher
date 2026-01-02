@@ -10,6 +10,7 @@ public partial class LoginFrameViewModel : ObservableObject
 {
     private readonly Func<AskPasswordPageViewModel> _askPasswordPage;
     private readonly Func<AskUsernamePasswordPageViewModel> _askUsernamePasswordPage;
+    private readonly Func<LoginCompletedPageViewModel> _loginCompletedPage;
     private readonly Func<PlayerSelectPageViewModel> _playerSelectPage;
     [ObservableProperty] private bool _canReturnToPlayerSelect;
     [ObservableProperty] private bool _isTransitionReversed;
@@ -18,11 +19,13 @@ public partial class LoginFrameViewModel : ObservableObject
     public LoginFrameViewModel(LoginNavigationService login,
         Func<AskUsernamePasswordPageViewModel> askUsernamePasswordPage,
         Func<PlayerSelectPageViewModel> playerSelectPage,
-        Func<AskPasswordPageViewModel> askPasswordPage)
+        Func<AskPasswordPageViewModel> askPasswordPage,
+        Func<LoginCompletedPageViewModel> loginCompletedPage)
     {
         this._askUsernamePasswordPage = askUsernamePasswordPage;
         this._playerSelectPage = playerSelectPage;
         this._askPasswordPage = askPasswordPage;
+        this._loginCompletedPage = loginCompletedPage;
         this.Page = this.PageForStep(null);
         login.StepChanged += (_, stepChange) =>
         {
@@ -47,6 +50,7 @@ public partial class LoginFrameViewModel : ObservableObject
         {
             AskUsernamePassword s => this._askUsernamePasswordPage().Prefilled(s),
             AskPassword s => this._askPasswordPage().Prefilled(s),
+            LoginCompleted s => this._loginCompletedPage().Initialize(s),
             null => this._playerSelectPage()
         };
     }

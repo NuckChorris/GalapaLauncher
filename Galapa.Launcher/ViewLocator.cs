@@ -44,6 +44,7 @@ public class ViewLocator : IDataTemplate
             AskUsernamePasswordPageViewModel => this.ResolveView<AskUsernamePasswordPage>(),
             AskPasswordPageViewModel => this.ResolveView<AskPasswordPage>(),
             PlayerSelectPageViewModel => this.ResolveView<PlayerSelectPage>(),
+            LoginCompletedPageViewModel => this.ResolveView<LoginCompletedPage>(),
 
             // Fallback for unknown ViewModels
             ViewModelBase vm => new TextBlock { Text = $"View not found for: {vm.GetType().Name}" },
