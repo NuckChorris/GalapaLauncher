@@ -21,10 +21,23 @@ public class SavedPlayer(
     private readonly IPlayerCredential _credential = credential;
     private readonly PlayerListJson.SavedPlayer _json = json;
     private readonly PlayerListXml.SavedPlayer _xml = xml;
-    private SavedPlayerLoginStrategy? _loginStrategy;
+    private LoginStrategy? _loginStrategy;
 
-    public SavedPlayerLoginStrategy LoginStrategy =>
-        this._loginStrategy ??= new SavedPlayerLoginStrategy(this.Token);
+    public LoginStrategy LoginStrategy
+    {
+        get
+        {
+            if (this._loginStrategy is null)
+            {
+                var savedStrategy = new SavedPlayerLoginStrategy(this.Token);
+                this._loginStrategy = this.Password is not null || this.TotpKey is not null
+                    ? new AutoLoginStrategy(savedStrategy, this._credential)
+                    : savedStrategy;
+            }
+
+            return this._loginStrategy;
+        }
+    }
 
     /// <summary>
     ///     The number assigned to this player.

@@ -21,7 +21,7 @@ public class SavedPlayerItem : PlayerListItem
     public required SavedPlayer Player { get; init; }
     public override string Icon => "/Assets/Icons/solar--user-rounded-bold-duotone.svg";
     public override string Text => this.Player.Name ?? $"Player {this.Player.Number}";
-    public override SavedPlayerLoginStrategy LoginStrategy => this.Player.LoginStrategy;
+    public override LoginStrategy LoginStrategy => this.Player.LoginStrategy;
 }
 
 public class NewPlayerItem : PlayerListItem
