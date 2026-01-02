@@ -99,7 +99,7 @@ internal sealed class Program
     public static AppBuilder BuildAvaloniaApp()
     {
         // Set up Paths for Galapa.Core
-        Paths.Create();
+        Paths.Initialize();
 
         // We can't create our service provider until the Paths are configured to allow the Settings to be loaded
         // TODO: move Paths.AppData into the launcher itself (it's not core-related)
