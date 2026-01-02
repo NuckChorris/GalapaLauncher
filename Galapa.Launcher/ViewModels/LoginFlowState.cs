@@ -8,4 +8,10 @@ public partial class LoginFlowState : ObservableObject
     [ObservableProperty] private bool _savePassword;
     [ObservableProperty] private bool _saveUser;
     [ObservableProperty] private LoginStrategy? _strategy;
+
+    partial void OnSaveUserChanged(bool value)
+    {
+        // Can only save password if we also save username
+        if (!value) this.SavePassword = false;
+    }
 }
