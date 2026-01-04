@@ -9,6 +9,7 @@ using Galapa.Launcher.Services;
 using Galapa.Launcher.ViewModels;
 using Galapa.Launcher.ViewModels.AppFrame;
 using Galapa.Launcher.ViewModels.LoginFrame;
+using Galapa.Launcher.ViewModels.SettingsFrame;
 using Galapa.Launcher.Views;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -48,6 +49,7 @@ internal sealed class Program
         container.Register<AppFrameViewModel>(Reuse.Singleton);
         container.Register<HomePageViewModel>(Reuse.Singleton);
         container.Register<SettingsPageViewModel>(Reuse.Singleton);
+        container.Register<SettingsFrameViewModel>(Reuse.Singleton);
         container.Register<GamepadInputService>(Reuse.Singleton);
         container.Register<LoginFlowState>(Reuse.Singleton);
         container.Register<LoginNavigationService>(Reuse.Singleton);

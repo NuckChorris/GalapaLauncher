@@ -1,5 +1,8 @@
-﻿namespace Galapa.Launcher.ViewModels.AppFrame;
+using Galapa.Launcher.ViewModels.SettingsFrame;
 
-public class SettingsPageViewModel : AppPageViewModel
+namespace Galapa.Launcher.ViewModels.AppFrame;
+
+public class SettingsPageViewModel(SettingsFrameViewModel settingsFrame) : AppPageViewModel
 {
+    public SettingsFrameViewModel SettingsFrame { get; } = settingsFrame;
 }

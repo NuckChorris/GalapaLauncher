@@ -5,9 +5,11 @@ using DryIoc;
 using Galapa.Launcher.ViewModels;
 using Galapa.Launcher.ViewModels.AppFrame;
 using Galapa.Launcher.ViewModels.LoginFrame;
+using Galapa.Launcher.ViewModels.SettingsFrame;
 using Galapa.Launcher.Views;
 using Galapa.Launcher.Views.AppFrame;
 using Galapa.Launcher.Views.LoginFrame;
+using Galapa.Launcher.Views.SettingsFrame;
 using Microsoft.Extensions.Logging;
 
 namespace Galapa.Launcher;
@@ -45,6 +47,8 @@ public class ViewLocator : IDataTemplate
             AskPasswordPageViewModel => this.ResolveView<AskPasswordPage>(),
             PlayerSelectPageViewModel => this.ResolveView<PlayerSelectPage>(),
             LoginCompletedPageViewModel => this.ResolveView<LoginCompletedPage>(),
+            // SettingsFrame
+            SettingsFrameViewModel => this.ResolveView<SettingsFrame>(),
 
             // Fallback for unknown ViewModels
             _ => new TextBlock { Text = $"View not found for: {param.GetType().Name}" }
