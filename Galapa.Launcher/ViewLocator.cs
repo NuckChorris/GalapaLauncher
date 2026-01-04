@@ -47,15 +47,13 @@ public class ViewLocator : IDataTemplate
             LoginCompletedPageViewModel => this.ResolveView<LoginCompletedPage>(),
 
             // Fallback for unknown ViewModels
-            ViewModelBase vm => new TextBlock { Text = $"View not found for: {vm.GetType().Name}" },
-
-            _ => null
+            _ => new TextBlock { Text = $"View not found for: {param.GetType().Name}" }
         };
     }
 
     public bool Match(object? data)
     {
-        return data is ViewModelBase;
+        return true;
     }
 
     /// <summary>

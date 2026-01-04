@@ -1,5 +1,7 @@
-﻿namespace Galapa.Launcher.ViewModels.LoginFrame;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-public class LoginPageViewModel : ViewModelBase
+namespace Galapa.Launcher.ViewModels.LoginFrame;
+
+public class LoginPageViewModel : ObservableObject
 {
 }

@@ -1,5 +1,7 @@
-﻿namespace Galapa.Launcher.ViewModels.AppFrame;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-public abstract class AppPageViewModel : ViewModelBase
+namespace Galapa.Launcher.ViewModels.AppFrame;
+
+public abstract class AppPageViewModel : ObservableObject
 {
 }
