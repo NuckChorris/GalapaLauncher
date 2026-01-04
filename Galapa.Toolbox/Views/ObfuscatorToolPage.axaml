@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Galapa.Toolbox.Views.ObfuscatorToolPage">
+
+    <Grid Margin="20">
+        <StackPanel Spacing="16" MaxWidth="600" HorizontalAlignment="Left">
+            <TextBlock Text="Obfuscator/Deobfuscator Tool" FontSize="24" FontWeight="Bold" Margin="0,0,0,16" />
+
+            <Button Content="Select File" Click="OnSelectFileClick" />
+            <TextBlock x:Name="SelectedFileText" Text="No file selected." Opacity="0.7" />
+
+            <ComboBox x:Name="ObfuscatorCombo" SelectedIndex="0" SelectionChanged="ObfuscatorCombo_SelectionChanged">
+                <ComboBoxItem Content="XorObfuscator" />
+                <ComboBoxItem Content="UsernameObfuscator" />
+            </ComboBox>
+
+            <StackPanel Spacing="4">
+                <TextBlock x:Name="ParameterHeader" Text="Bytes" />
+                <TextBox x:Name="ParameterBox" Watermark="1A 2B 3C" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="16">
+                <RadioButton x:Name="ObfuscateRadio" Content="Obfuscate" IsChecked="True" GroupName="Mode" />
+                <RadioButton x:Name="DeobfuscateRadio" Content="Deobfuscate" GroupName="Mode" />
+            </StackPanel>
+
+            <Button Content="Run" Click="OnRunClick" />
+        </StackPanel>
+    </Grid>
+</UserControl>

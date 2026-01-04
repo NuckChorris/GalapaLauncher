@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:services="using:Galapa.Toolbox.Services"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Galapa.Toolbox.Views.SettingsPage"
+             x:DataType="services:Settings">
+
+    <ScrollViewer>
+        <StackPanel Spacing="8" Margin="20" MaxWidth="1000" HorizontalAlignment="Stretch">
+            <TextBlock Text="Settings" FontSize="24" FontWeight="Bold" Margin="0,0,0,16" />
+
+            <!-- Game Folder Setting -->
+            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="4" Padding="16">
+                <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
+                    <PathIcon Grid.RowSpan="2" Margin="0,0,16,0" VerticalAlignment="Center"
+                              Data="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z" />
+                    <TextBlock Grid.Column="1" Text="Game folder" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="1" Grid.Row="1"
+                               Text="{Binding GameFolderPath}"
+                               Opacity="0.7" TextTrimming="CharacterEllipsis" />
+                    <Button Grid.Column="2" Grid.RowSpan="2" Content="Browse"
+                            Click="OnGameFolderBrowseClick" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <!-- Save Folder Setting -->
+            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="4" Padding="16">
+                <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
+                    <PathIcon Grid.RowSpan="2" Margin="0,0,16,0" VerticalAlignment="Center"
+                              Data="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z" />
+                    <TextBlock Grid.Column="1" Text="Save folder" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="1" Grid.Row="1"
+                               Text="{Binding SaveFolderPath}"
+                               Opacity="0.7" TextTrimming="CharacterEllipsis" />
+                    <Button Grid.Column="2" Grid.RowSpan="2" Content="Browse"
+                            Click="OnSaveFolderBrowseClick" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

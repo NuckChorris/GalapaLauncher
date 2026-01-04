@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Galapa.Toolbox.Models;
-using Microsoft.UI.Xaml.Controls;
 
 namespace Galapa.Toolbox.ViewModels;
 
@@ -23,17 +22,6 @@ public class SaveExplorerItem : ObservableObject
             if (!IsDirectory) return null;
             return new(Directory.GetFileSystemEntries(Path)
                 .Select(x => new SaveExplorerItem { Path = x }).ToList());
-        }
-    }
-
-    public MenuFlyout ContextMenu
-    {
-        get
-        {
-            var flyout = new MenuFlyout();
-            flyout.Items.Add(new MenuFlyoutItem { Text = "Export deobfuscated" });
-
-            return flyout;
         }
     }
 }

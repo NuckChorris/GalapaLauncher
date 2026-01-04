@@ -1,8 +1,8 @@
-using Microsoft.UI.Xaml.Controls;
+using Avalonia.Controls;
 
 namespace Galapa.Toolbox.Views;
 
-public sealed partial class HomePage : Page
+public partial class HomePage : UserControl
 {
     public HomePage()
     {
