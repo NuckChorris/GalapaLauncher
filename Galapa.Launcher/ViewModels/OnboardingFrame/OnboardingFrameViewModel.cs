@@ -19,7 +19,7 @@ public partial class OnboardingFrameViewModel : ObservableObject
     {
         get
         {
-            if (this.Settings.GameFolderPath is null) return typeof(SelectGameFolderPage);
+            // if (this.Settings.GameFolderPath is null) return typeof(SelectGameFolderPage);
 
             if (this.Settings.GameFolderPath is null)
             {
