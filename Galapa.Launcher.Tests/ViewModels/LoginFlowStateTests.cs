@@ -1,3 +1,4 @@
+using Galapa.Core.Game.Authentication;
 using Galapa.Launcher.ViewModels;
 using Galapa.TestUtilities;
 using Moq;

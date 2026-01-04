@@ -1,3 +1,4 @@
+using Galapa.Core.Game.Authentication;
 using Galapa.Launcher.Services;
 
 namespace Galapa.Launcher.Tests.Services;
