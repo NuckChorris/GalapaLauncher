@@ -1,13 +1,19 @@
-using Galapa.Core.Game.Authentication;
 using Galapa.Core.Configuration;
+using Galapa.Core.Game.Authentication;
 using Galapa.TestUtilities;
 using Moq;
 
 namespace Galapa.Core.Tests.Services;
 
 [Collection("Sequential")]
-public class PlayerListJsonTests
+public class PlayerListJsonTests : IDisposable
 {
+    public void Dispose()
+    {
+        // Reset to default path
+        Paths.AppData = null;
+    }
+
     [Fact]
     public async Task TestLoadAsync_WhenFileDoesNotExist()
     {

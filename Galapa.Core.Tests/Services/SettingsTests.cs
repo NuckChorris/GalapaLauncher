@@ -4,17 +4,13 @@ using Galapa.TestUtilities;
 
 namespace Galapa.Core.Tests.Services;
 
-[Collection("Settings")]
+[Collection("Sequential")]
 public class SettingsTests : IDisposable
 {
     private readonly TempDirectory _tempDir;
-    private readonly string _originalAppData;
 
     public SettingsTests()
     {
-        // Save original AppData path
-        this._originalAppData = Paths.AppData;
-
         // Set up temporary directory for test isolation
         this._tempDir = new TempDirectory();
         Paths.AppData = this._tempDir.Path;
@@ -22,8 +18,8 @@ public class SettingsTests : IDisposable
 
     public void Dispose()
     {
-        // Restore original AppData path
-        Paths.AppData = this._originalAppData;
+        // Reset to default path
+        Paths.AppData = null;
         this._tempDir.Dispose();
     }
 

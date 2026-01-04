@@ -1,11 +1,19 @@
-﻿namespace Galapa.Core.Configuration;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Galapa.Core.Configuration;
 
 public static class Paths
 {
-    public static string AppData => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "GalapaLauncher"
-    );
+    private static string? _appDataOverride;
+
+    public static string AppData
+    {
+        get => _appDataOverride ?? Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "GalapaLauncher"
+        );
+        [param: AllowNull] set => _appDataOverride = value;
+    }
 
     public static string Cache => Path.Combine(AppData, "Cache");
     public static string Settings => Path.Combine(AppData, "Settings.json");

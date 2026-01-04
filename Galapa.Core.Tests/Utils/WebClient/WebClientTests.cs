@@ -9,8 +9,15 @@ using WebClientNS = Galapa.Core.Web;
 
 namespace Galapa.Core.Tests.Utils.WebClient;
 
-public class WebClientTests
+[Collection("Sequential")]
+public class WebClientTests : IDisposable
 {
+    public void Dispose()
+    {
+        // Reset to default path
+        Paths.AppData = null;
+    }
+
     [Fact]
     public async Task Get_ShouldReturnSameInstanceForSameKey()
     {

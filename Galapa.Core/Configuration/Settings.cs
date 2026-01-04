@@ -44,6 +44,7 @@ public partial class Settings : ObservableValidator
 
     public void Save()
     {
+        Directory.CreateDirectory(Paths.AppData);
         File.WriteAllText(Paths.Settings, JsonSerializer.Serialize(this));
     }
 

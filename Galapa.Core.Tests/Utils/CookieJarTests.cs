@@ -6,8 +6,14 @@ using Galapa.TestUtilities;
 namespace Galapa.Core.Tests.Utils;
 
 [Collection("Sequential")]
-public class CookieJarTests
+public class CookieJarTests : IDisposable
 {
+    public void Dispose()
+    {
+        // Reset to default path
+        Paths.AppData = null;
+    }
+
     // FakeHandler captures the request and returns a response with a Set-Cookie header.
     private class FakeHandler : HttpMessageHandler
     {
