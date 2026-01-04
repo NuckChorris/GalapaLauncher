@@ -34,20 +34,25 @@ jobs:
       - name: 🧪 Run tests with coverage
         run: dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage"
 
-      - name: 🛠 Build release for x64
-        run: dotnet build --no-restore --configuration Release -p:Platform=x64 -p:OutputPath=artifacts/x64
+      - name: 🛠 Publish Galapa.Launcher for x64
+        run: dotnet publish Galapa.Launcher --configuration Release -r win-x64 --self-contained false -o artifacts/Galapa.Launcher-x64
 
-      - name: 🛠 Build release for x86
-        run: dotnet build --no-restore --configuration Release -p:Platform=x86 -p:OutputPath=artifacts/x86
+      - name: 🛠 Publish Galapa.Toolbox for x64
+        run: dotnet publish Galapa.Toolbox --configuration Release -r win-x64 --self-contained false -o artifacts/Galapa.Toolbox-x64
 
-      - name: 📤 Upload x64 artifact
+      - name: 📦 Zip artifacts
+        run: |
+          Compress-Archive -Path artifacts/Galapa.Launcher-x64/* -DestinationPath artifacts/Galapa.Launcher-x64.zip
+          Compress-Archive -Path artifacts/Galapa.Toolbox-x64/* -DestinationPath artifacts/Galapa.Toolbox-x64.zip
+
+      - name: 📤 Upload Galapa.Launcher x64 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Galapa.Toolbox-x64.exe
-          path: artifacts/x64/Galapa.Toolbox.exe
+          name: Galapa.Launcher-x64
+          path: artifacts/Galapa.Launcher-x64.zip
 
-      - name: 📤 Upload x86 artifact
+      - name: 📤 Upload Galapa.Toolbox x64 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Galapa.Toolbox-x86.exe
-          path: artifacts/x86/Galapa.Toolbox.exe
+          name: Galapa.Toolbox-x64
+          path: artifacts/Galapa.Toolbox-x64.zip
