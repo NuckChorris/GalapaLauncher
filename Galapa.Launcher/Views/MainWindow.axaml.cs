@@ -1,51 +1,47 @@
 using System;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Galapa.Launcher.Services;
 using Galapa.Launcher.ViewModels;
-using Microsoft.Extensions.Logging;
 
 namespace Galapa.Launcher.Views;
 
 public partial class MainWindow : Window
 {
-    private readonly GamepadInputService _gamepadService;
-    private readonly ILogger<MainWindow> _logger;
+    private readonly ControllerPollingService _pollingService;
+    private readonly ControllerActionSource _actionSource;
+    private readonly ControllerInputRouter _inputRouter;
+    private readonly ActiveControllerService _activeControllerService;
 
-    public MainWindow(MainWindowViewModel mainWindowViewModel, GamepadInputService gamepadService,
-        ILogger<MainWindow> logger)
+    public MainWindow(
+        MainWindowViewModel mainWindowViewModel,
+        ControllerPollingService pollingService,
+        ControllerActionSource actionSource,
+        ControllerInputRouter inputRouter,
+        ActiveControllerService activeControllerService)
     {
         DataContext = mainWindowViewModel;
-        _gamepadService = gamepadService;
-        _logger = logger;
+        this._pollingService = pollingService;
+        this._actionSource = actionSource;
+        this._inputRouter = inputRouter;
+        this._activeControllerService = activeControllerService;
 
         InitializeComponent();
         ExtendClientAreaToDecorationsHint = true;
 
-        _gamepadService.NavigationKeyPressed += OnGamepadNavigationKeyPressed;
-        _gamepadService.Start();
+        // Start controller services
+        this._pollingService.Start();
+        this._actionSource.Start();
+        this._activeControllerService.Start();
+        this._inputRouter.Attach(this);
 
-        Closed += OnClosed;
-    }
-
-    private void OnGamepadNavigationKeyPressed(object? sender, Key key)
-    {
-        _logger.LogInformation("Got gamepad event {key}", key);
-        var focusManager = GetTopLevel(this)?.FocusManager;
-        if (focusManager?.GetFocusedElement() is not InputElement focusedElement) focusedElement = this;
-
-        var keyEventArgs = new KeyEventArgs
-        {
-            Key = key,
-            RoutedEvent = KeyDownEvent
-        };
-
-        focusedElement.RaiseEvent(keyEventArgs);
+        Closed += this.OnClosed;
     }
 
     private void OnClosed(object? sender, EventArgs e)
     {
-        _gamepadService.NavigationKeyPressed -= OnGamepadNavigationKeyPressed;
-        _gamepadService.Stop();
+        this._inputRouter.Detach();
+        this._activeControllerService.Stop();
+        this._actionSource.Stop();
+        this._pollingService.Stop();
     }
 }

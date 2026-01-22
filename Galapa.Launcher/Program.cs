@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia;
 using DryIoc;
 using Galapa.Core.Configuration;
@@ -32,6 +33,13 @@ internal sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        // Log unobserved task exceptions
+        TaskScheduler.UnobservedTaskException += (sender, e) =>
+        {
+            Console.WriteLine($"UNOBSERVED TASK EXCEPTION: {e.Exception}");
+            foreach (var ex in e.Exception.InnerExceptions) Console.WriteLine($"  Inner: {ex}");
+        };
+
         // TODO: Unfuck this whole startup sequence
         VelopackApp.Build().SetLogger(Log).Run();
 
@@ -50,11 +58,20 @@ internal sealed class Program
         container.Register<HomePageViewModel>(Reuse.Singleton);
         container.Register<SettingsPageViewModel>(Reuse.Singleton);
         container.Register<SettingsFrameViewModel>(Reuse.Singleton);
-        container.Register<GamepadInputService>(Reuse.Singleton);
+        container.Register<GeneralSettingsPageViewModel>(Reuse.Singleton);
+        container.Register<GameSettingsPageViewModel>(Reuse.Singleton);
         container.Register<LoginFlowState>(Reuse.Singleton);
         container.Register<LoginNavigationService>(Reuse.Singleton);
         container.Register<IPlayerCredentialFactory, WindowsCredentialManagerFactory>(Reuse.Singleton);
         container.Register<PlayerList>(Reuse.Singleton);
+
+        // Controller input services
+        container.Register<ControllerListService>(Reuse.Singleton);
+        container.Register<ControllerPollingService>(Reuse.Singleton);
+        container.Register<ControllerConfigService>(Reuse.Singleton);
+        container.Register<ControllerActionSource>(Reuse.Singleton);
+        container.Register<ControllerInputRouter>(Reuse.Singleton);
+        container.Register<ActiveControllerService>(Reuse.Singleton);
 
         // Register transients
         container.Register<LoginFrameViewModel>(Reuse.Transient);
