@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="using:Galapa.Toolbox.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Galapa.Toolbox.Controls.FolderExplorer"
+             x:DataType="controls:FolderExplorer">
+
+    <UserControl.Resources>
+        <controls:BoolToIconConverter x:Key="BoolToIconConverter"
+                                      TrueValue="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z"
+                                      FalseValue="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+    </UserControl.Resources>
+
+    <Grid>
+        <TreeView Name="FileTree"
+                  ItemsSource="{Binding Items, RelativeSource={RelativeSource AncestorType=controls:FolderExplorer}}">
+            <TreeView.ContextMenu>
+                <ContextMenu Name="ItemContextMenu" Opening="OnContextMenuOpening" />
+            </TreeView.ContextMenu>
+            <TreeView.ItemTemplate>
+                <TreeDataTemplate ItemsSource="{Binding Children}" x:DataType="controls:FolderExplorerItem">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Width="16" Height="16"
+                                  Data="{Binding IsDirectory, Converter={StaticResource BoolToIconConverter}}" />
+                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Annotation}"
+                                   IsVisible="{Binding Annotation, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                   Opacity="0.6" Margin="12,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                </TreeDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+    </Grid>
+</UserControl>

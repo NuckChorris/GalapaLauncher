@@ -2,34 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:Galapa.Toolbox.ViewModels"
+             xmlns:controls="using:Galapa.Toolbox.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Galapa.Toolbox.Views.SaveExplorerPage"
-             x:DataType="vm:SaveExplorerPageViewModel">
+             x:Class="Galapa.Toolbox.Views.SaveExplorerPage">
 
     <Grid>
-        <TreeView ItemsSource="{Binding Items}">
-            <TreeView.ItemTemplate>
-                <TreeDataTemplate ItemsSource="{Binding Children}">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <PathIcon Width="16" Height="16">
-                            <PathIcon.Data>
-                                <Binding Path="IsDirectory">
-                                    <Binding.Converter>
-                                        <vm:BoolToIconConverter
-                                            TrueValue="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z"
-                                            FalseValue="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-                                    </Binding.Converter>
-                                </Binding>
-                            </PathIcon.Data>
-                        </PathIcon>
-                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding DeobfuscatedName}"
-                                   IsVisible="{Binding DeobfuscatedName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                   Opacity="0.6" Margin="12,0,0,0" VerticalAlignment="Center" />
-                    </StackPanel>
-                </TreeDataTemplate>
-            </TreeView.ItemTemplate>
-        </TreeView>
+        <controls:FolderExplorer x:Name="Explorer" />
     </Grid>
 </UserControl>

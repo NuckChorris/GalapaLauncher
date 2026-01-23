@@ -3,11 +3,21 @@ using System.Globalization;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
 
-namespace Galapa.Toolbox.ViewModels;
+namespace Galapa.Toolbox.Controls;
 
+/// <summary>
+///     Converts a boolean value to an icon path geometry.
+/// </summary>
 public class BoolToIconConverter : IValueConverter
 {
+    /// <summary>
+    ///     The path data to use when the value is true.
+    /// </summary>
     public string? TrueValue { get; set; }
+
+    /// <summary>
+    ///     The path data to use when the value is false.
+    /// </summary>
     public string? FalseValue { get; set; }
 
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
