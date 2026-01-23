@@ -53,6 +53,30 @@ public class FilenameObfuscatorTests
     }
 
     [Fact]
+    public void Obfuscate_GamepadMousesClient()
+    {
+        var input = "eventTextEtcWindowsgamepadmousesClient.win32.etp";
+        var seed = 48;
+        var expected = "shpkoLhdcPvwNmiitivstexqdlrcowjlXvnxry!dfj@@!qvr";
+
+        var result = FilenameObfuscator.Obfuscate(input, seed);
+
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void Obfuscate_ConfigToolsClient()
+    {
+        var input = "eventTextEtcWindowsconfigtoolsClient.win32.etp";
+        var seed = 46;
+        var expected = "aufjzAunbNycMdhhkhyczqfhgxmkyhSourjz!bjx$$!kop";
+
+        var result = FilenameObfuscator.Obfuscate(input, seed);
+
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
     public void Deobfuscate_PlayerList()
     {
         string input = "cxjYxsgheGzie!iyx";
@@ -94,6 +118,30 @@ public class FilenameObfuscatorTests
         string input = "YzjadjylzqvBmsvub!zni]]!vnh";
         int seed = 0x1b;
         string expected = "EnvironmentOption.win32.xml";
+
+        var result = FilenameObfuscator.Deobfuscate(input, seed);
+
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void Deobfuscate_GamepadMousesClient()
+    {
+        var input = "shpkoLhdcPvwNmiitivstexqdlrcowjlXvnxry!dfj@@!qvr";
+        var seed = 48;
+        var expected = "eventTextEtcWindowsgamepadmousesClient.win32.etp";
+
+        var result = FilenameObfuscator.Deobfuscate(input, seed);
+
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void Deobfuscate_ConfigToolsClient()
+    {
+        var input = "aufjzAunbNycMdhhkhyczqfhgxmkyhSourjz!bjx$$!kop";
+        var seed = 46;
+        var expected = "eventTextEtcWindowsconfigtoolsClient.win32.etp";
 
         string result = FilenameObfuscator.Deobfuscate(input, seed);
 
