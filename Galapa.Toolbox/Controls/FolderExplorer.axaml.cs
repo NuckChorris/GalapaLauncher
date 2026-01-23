@@ -69,6 +69,15 @@ public class FolderExplorer : UserControl
         if (change.Property == RootPathProperty) this.RefreshItems();
     }
 
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        // Recursively clear all loaded children before detaching to prevent visual tree errors
+        foreach (var item in this.Items) item.ClearLoadedChildren();
+
+        this.Items.Clear();
+        base.OnDetachedFromVisualTree(e);
+    }
+
     private void RefreshItems()
     {
         this.Items.Clear();

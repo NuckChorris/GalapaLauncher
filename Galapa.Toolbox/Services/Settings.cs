@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Galapa.Toolbox.Services;
@@ -20,6 +21,7 @@ public partial class Settings : ObservableObject
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "GalapaToolbox", "settings.json");
 
+    [JsonConstructor]
     private Settings()
     {
     }

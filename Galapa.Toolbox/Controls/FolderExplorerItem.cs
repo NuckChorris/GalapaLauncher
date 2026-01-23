@@ -67,4 +67,16 @@ public partial class FolderExplorerItem : ObservableObject
             return this._children;
         }
     }
+
+    /// <summary>
+    ///     Recursively clears all loaded children to prepare for visual tree detachment.
+    /// </summary>
+    public void ClearLoadedChildren()
+    {
+        if (!this._childrenLoaded || this._children == null) return;
+
+        foreach (var child in this._children) child.ClearLoadedChildren();
+
+        this._children.Clear();
+    }
 }

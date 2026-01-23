@@ -19,6 +19,7 @@ public partial class MainWindow : Window
             {
                 "Home" => new HomePage(),
                 "SaveExplorer" => new SaveExplorerPage(),
+                "GameExplorer" => new GameExplorerPage(),
                 "Obfuscator" => new ObfuscatorToolPage(),
                 "Settings" => new SettingsPage(),
                 _ => this.ContentArea.Content
