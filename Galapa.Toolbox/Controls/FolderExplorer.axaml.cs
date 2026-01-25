@@ -10,7 +10,7 @@ using Avalonia.Interactivity;
 
 namespace Galapa.Toolbox.Controls;
 
-public class FolderExplorer : UserControl
+public partial class FolderExplorer : UserControl
 {
     public static readonly StyledProperty<string?> RootPathProperty =
         AvaloniaProperty.Register<FolderExplorer, string?>(nameof(RootPath));
@@ -27,7 +27,7 @@ public class FolderExplorer : UserControl
 
     public FolderExplorer()
     {
-        InitializeComponent();
+        this.InitializeComponent();
     }
 
     /// <summary>
@@ -118,7 +118,7 @@ public class FolderExplorer : UserControl
         if (sender is not ContextMenu contextMenu) return;
 
         // Get the selected item from the TreeView
-        if (FileTree.SelectedItem is not FolderExplorerItem item)
+        if (this.FileTree.SelectedItem is not FolderExplorerItem item)
         {
             e.Cancel = true;
             return;

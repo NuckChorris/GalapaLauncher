@@ -5,7 +5,7 @@ using Galapa.Toolbox.Tools;
 
 namespace Galapa.Toolbox.Views;
 
-public class GameExplorerPage : UserControl
+public partial class GameExplorerPage : UserControl
 {
     public GameExplorerPage()
     {
