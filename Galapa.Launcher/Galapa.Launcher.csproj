@@ -47,6 +47,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Velopack" Version="0.0.1298"/>
+        <PackageReference Include="Vortice.DirectInput" Version="3.8.1"/>
     </ItemGroup>
 
     <ItemGroup>

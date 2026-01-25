@@ -257,18 +257,27 @@ public class ControllerListService : IDisposable
             for (var i = 0; i < matchCount; i++)
             {
                 var key = GenerateCorrelationKey(vidPid.VendorId, vidPid.ProductId, i);
-                var controller = new Controller
+
+                // Reuse existing Controller object to preserve event subscriptions
+                if (this._correlatedControllers.TryGetValue(key, out var existing))
                 {
-                    Id = key,
-                    Name = sdl3List[i].Name, // Prefer SDL3 name (better mappings)
-                    VendorId = vidPid.VendorId,
-                    ProductId = vidPid.ProductId,
-                    InstanceIndex = i,
-                    GamepadType = sdl3List[i].GamepadType,
-                    Sdl3JoystickId = sdl3List[i].JoystickId,
-                    DirectInputInstanceGuid = diList[i].InstanceGuid
-                };
-                newCorrelated[key] = controller;
+                    newCorrelated[key] = existing;
+                }
+                else
+                {
+                    var controller = new Controller
+                    {
+                        Id = key,
+                        Name = sdl3List[i].Name, // Prefer SDL3 name (better mappings)
+                        VendorId = vidPid.VendorId,
+                        ProductId = vidPid.ProductId,
+                        InstanceIndex = i,
+                        GamepadType = sdl3List[i].GamepadType,
+                        Sdl3JoystickId = sdl3List[i].JoystickId,
+                        DirectInputInstanceGuid = diList[i].InstanceGuid
+                    };
+                    newCorrelated[key] = controller;
+                }
             }
 
             // Log unmatched SDL3 devices (once)

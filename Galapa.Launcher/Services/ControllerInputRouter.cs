@@ -2,7 +2,6 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Input.Platform;
 using Avalonia.VisualTree;
 using Galapa.Launcher.Input;
 using Galapa.Launcher.Models;
@@ -70,11 +69,17 @@ public class ControllerInputRouter : IDisposable
     private void RouteAction(ControllerAction action, bool isRepeat)
     {
         if (this._topLevel == null)
+        {
+            this._logger.LogWarning("RouteAction called but no TopLevel attached");
             return;
+        }
 
         // Get the currently focused element
         var focusManager = this._topLevel.FocusManager;
         var focused = focusManager?.GetFocusedElement() as Visual;
+
+        this._logger.LogInformation("Routing action {Action} (repeat={IsRepeat}), focused={Focused}",
+            action, isRepeat, focused?.GetType().Name ?? "none");
 
         // If nothing focused, start from the top level
         focused ??= this._topLevel;
@@ -94,6 +99,7 @@ public class ControllerInputRouter : IDisposable
                     return;
                 }
             }
+
             current = current.GetVisualParent();
         }
 
@@ -129,6 +135,7 @@ public class ControllerInputRouter : IDisposable
                     };
                     focused.RaiseEvent(keyArgs);
                 }
+
                 break;
 
             case ControllerAction.Decline:
@@ -142,6 +149,7 @@ public class ControllerInputRouter : IDisposable
                     };
                     focused.RaiseEvent(keyArgs);
                 }
+
                 break;
 
             // Bumpers and triggers have no default action
@@ -174,12 +182,25 @@ public class ControllerInputRouter : IDisposable
         {
             // Use Avalonia's focus navigation
             var next = KeyboardNavigationHandler.GetNext(focused, direction);
-            next?.Focus(NavigationMethod.Directional);
+            if (next != null)
+            {
+                this._logger.LogDebug("Navigating from {From} to {To}", focused.GetType().Name, next.GetType().Name);
+                next.Focus(NavigationMethod.Directional);
+            }
         }
         else
         {
-            // Focus the first focusable element
-            this._topLevel.Focus(NavigationMethod.Directional);
+            // Nothing focused - find first focusable element using Tab navigation
+            var first = KeyboardNavigationHandler.GetNext(this._topLevel, NavigationDirection.Next);
+            if (first != null)
+            {
+                this._logger.LogInformation("Nothing focused, focusing first element: {Element}", first.GetType().Name);
+                first.Focus(NavigationMethod.Directional);
+            }
+            else
+            {
+                this._logger.LogWarning("No focusable elements found");
+            }
         }
     }
 

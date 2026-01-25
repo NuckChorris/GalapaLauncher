@@ -66,6 +66,7 @@ public class ControllerActionSource : IDisposable
         {
             this.UnsubscribeFromController(controller);
         }
+
         this._subscribedControllers.Clear();
 
         this._logger.LogDebug("ControllerActionSource stopped");
@@ -85,11 +86,14 @@ public class ControllerActionSource : IDisposable
     private void SubscribeToController(Controller controller)
     {
         if (!this._subscribedControllers.Add(controller))
+        {
+            this._logger.LogDebug("Already subscribed to {Name}", controller.Name);
             return;
+        }
 
         controller.ButtonPressed += this.OnButtonPressed;
         controller.ButtonRepeat += this.OnButtonRepeat;
-        this._logger.LogDebug("Subscribed to button events for {Name}", controller.Name);
+        this._logger.LogInformation("Subscribed to button events for {Name} (Id={Id})", controller.Name, controller.Id);
     }
 
     private void UnsubscribeFromController(Controller controller)
@@ -104,13 +108,17 @@ public class ControllerActionSource : IDisposable
         var action = this.MapButtonToAction(e.Controller, e.Button);
         if (action.HasValue)
         {
-            this._logger.LogDebug("Action triggered: {Action} from {Button}", action.Value, e.Button);
+            this._logger.LogInformation("Action triggered: {Action} from {Button}", action.Value, e.Button);
             this.ActionTriggered?.Invoke(this, new ControllerActionEventArgs
             {
                 Controller = e.Controller,
                 Action = action.Value,
                 IsRepeat = false
             });
+        }
+        else
+        {
+            this._logger.LogDebug("No action mapped for button {Button}", e.Button);
         }
     }
 

@@ -8,18 +8,18 @@ using SDL3;
 namespace Galapa.Launcher.Services;
 
 /// <summary>
-/// Tracks the most recently used controller and exposes its label style
-/// for reactive UI updates.
+///     Tracks the most recently used controller and exposes its label style
+///     for reactive UI updates.
 /// </summary>
 public class ActiveControllerService : INotifyPropertyChanged, IDisposable
 {
-    private readonly ILogger<ActiveControllerService> _logger;
-    private readonly ControllerListService _controllerListService;
     private readonly ControllerActionSource _actionSource;
+    private readonly ControllerListService _controllerListService;
+    private readonly ILogger<ActiveControllerService> _logger;
 
     private Controller? _activeController;
-    private ControllerLabelStyle _labelStyle = ControllerLabelStyle.Xbox;
     private bool _isControllerConnected;
+    private ControllerLabelStyle _labelStyle = ControllerLabelStyle.Xbox;
 
     public ActiveControllerService(
         ILogger<ActiveControllerService> logger,
@@ -31,10 +31,8 @@ public class ActiveControllerService : INotifyPropertyChanged, IDisposable
         this._actionSource = actionSource;
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-
     /// <summary>
-    /// The most recently used controller, or null if none.
+    ///     The most recently used controller, or null if none.
     /// </summary>
     public Controller? ActiveController
     {
@@ -55,7 +53,7 @@ public class ActiveControllerService : INotifyPropertyChanged, IDisposable
     }
 
     /// <summary>
-    /// The label style to use for button prompts based on the active controller.
+    ///     The label style to use for button prompts based on the active controller.
     /// </summary>
     public ControllerLabelStyle LabelStyle
     {
@@ -71,7 +69,7 @@ public class ActiveControllerService : INotifyPropertyChanged, IDisposable
     }
 
     /// <summary>
-    /// Whether any controller is currently connected.
+    ///     Whether any controller is currently connected.
     /// </summary>
     public bool IsControllerConnected
     {
@@ -86,8 +84,10 @@ public class ActiveControllerService : INotifyPropertyChanged, IDisposable
         }
     }
 
+    public event PropertyChangedEventHandler? PropertyChanged;
+
     /// <summary>
-    /// Starts tracking controller activity.
+    ///     Starts tracking controller activity.
     /// </summary>
     public void Start()
     {
@@ -98,15 +98,13 @@ public class ActiveControllerService : INotifyPropertyChanged, IDisposable
         // Set initial state
         this.IsControllerConnected = this._controllerListService.Controllers.Count > 0;
         if (this._controllerListService.Controllers.Count > 0)
-        {
             this.ActiveController = this._controllerListService.Controllers[0];
-        }
 
         this._logger.LogDebug("ActiveControllerService started");
     }
 
     /// <summary>
-    /// Stops tracking controller activity.
+    ///     Stops tracking controller activity.
     /// </summary>
     public void Stop()
     {
@@ -122,10 +120,7 @@ public class ActiveControllerService : INotifyPropertyChanged, IDisposable
         this.IsControllerConnected = true;
 
         // If no active controller, use this one
-        if (this.ActiveController == null)
-        {
-            this.ActiveController = e.Controller;
-        }
+        if (this.ActiveController == null) this.ActiveController = e.Controller;
     }
 
     private void OnControllerDisconnected(object? sender, ControllerEventArgs e)
@@ -134,11 +129,9 @@ public class ActiveControllerService : INotifyPropertyChanged, IDisposable
 
         // If the active controller disconnected, switch to another or clear
         if (this.ActiveController?.Id == e.Controller.Id)
-        {
             this.ActiveController = this._controllerListService.Controllers.Count > 0
                 ? this._controllerListService.Controllers[0]
                 : null;
-        }
     }
 
     private void OnActionTriggered(object? sender, ControllerActionEventArgs e)
@@ -164,7 +157,7 @@ public class ActiveControllerService : INotifyPropertyChanged, IDisposable
             SDL.GamepadType.NintendoSwitchJoyconPair => ControllerLabelStyle.Nintendo,
             SDL.GamepadType.Xbox360 => ControllerLabelStyle.Xbox,
             SDL.GamepadType.XboxOne => ControllerLabelStyle.Xbox,
-            _ => ControllerLabelStyle.Generic
+            _ => ControllerLabelStyle.Numeric
         };
     }
 

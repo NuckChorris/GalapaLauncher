@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia.Threading;
 using Galapa.Launcher.Models;
 using Microsoft.Extensions.Logging;
@@ -10,7 +12,7 @@ namespace Galapa.Launcher.Services;
 
 /// <summary>
 /// Service that polls DirectInput devices and fires button events on Controllers.
-/// Runs at ~120Hz using a DispatcherTimer.
+/// Runs at ~120Hz on a background thread to avoid blocking the UI.
 /// </summary>
 public class ControllerPollingService : IDisposable
 {
@@ -19,10 +21,13 @@ public class ControllerPollingService : IDisposable
     private readonly ILogger<ControllerPollingService> _logger;
     private readonly ControllerListService _controllerListService;
     private readonly IDirectInput8 _directInput;
-    private readonly DispatcherTimer _pollTimer;
     private readonly Dictionary<string, IDirectInputDevice8> _devices = new();
+    private readonly object _lock = new();
 
+    private CancellationTokenSource? _cts;
+    private Task? _pollTask;
     private bool _started;
+    private int _pollCount;
 
     public ControllerPollingService(
         ILogger<ControllerPollingService> logger,
@@ -31,11 +36,6 @@ public class ControllerPollingService : IDisposable
         this._logger = logger;
         this._controllerListService = controllerListService;
         this._directInput = DInput.DirectInput8Create();
-        this._pollTimer = new DispatcherTimer
-        {
-            Interval = TimeSpan.FromMilliseconds(PollIntervalMs)
-        };
-        this._pollTimer.Tick += this.OnPollTick;
     }
 
     public void Start()
@@ -56,7 +56,9 @@ public class ControllerPollingService : IDisposable
             this.AcquireController(controller);
         }
 
-        this._pollTimer.Start();
+        // Start background polling
+        this._cts = new CancellationTokenSource();
+        this._pollTask = Task.Run(() => this.PollLoop(this._cts.Token));
     }
 
     public void Stop()
@@ -67,24 +69,40 @@ public class ControllerPollingService : IDisposable
         this._logger.LogInformation("Stopping controller polling service");
         this._started = false;
 
-        this._pollTimer.Stop();
+        // Stop the poll loop
+        this._cts?.Cancel();
+        try
+        {
+            this._pollTask?.Wait(1000);
+        }
+        catch (AggregateException)
+        {
+            // Expected on cancellation
+        }
+
+        this._cts?.Dispose();
+        this._cts = null;
+        this._pollTask = null;
+
         this._controllerListService.ControllerConnected -= this.OnControllerConnected;
         this._controllerListService.ControllerDisconnected -= this.OnControllerDisconnected;
 
         // Release all devices
-        foreach (var (id, device) in this._devices)
+        lock (this._lock)
         {
-            try
-            {
-                device.Unacquire();
-                device.Dispose();
-            }
-            catch (Exception ex)
-            {
-                this._logger.LogWarning(ex, "Error releasing device {Id}", id);
-            }
+            foreach (var (id, device) in this._devices)
+                try
+                {
+                    device.Unacquire();
+                    device.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    this._logger.LogWarning(ex, "Error releasing device {Id}", id);
+                }
+
+            this._devices.Clear();
         }
-        this._devices.Clear();
     }
 
     private void OnControllerConnected(object? sender, ControllerEventArgs e)
@@ -99,72 +117,113 @@ public class ControllerPollingService : IDisposable
 
     private void AcquireController(Controller controller)
     {
-        if (this._devices.ContainsKey(controller.Id))
-            return;
-
-        try
+        lock (this._lock)
         {
-            var device = this._directInput.CreateDevice(controller.DirectInputInstanceGuid);
-            device.SetDataFormat<RawJoystickState>();
-            device.SetCooperativeLevel(IntPtr.Zero, CooperativeLevel.NonExclusive | CooperativeLevel.Background);
-            device.Acquire();
+            if (this._devices.ContainsKey(controller.Id))
+            {
+                this._logger.LogDebug("Controller {Name} already acquired", controller.Name);
+                return;
+            }
 
-            this._devices[controller.Id] = device;
-            this._logger.LogDebug("Acquired DirectInput device for controller {Name}", controller.Name);
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError(ex, "Failed to acquire DirectInput device for controller {Name}", controller.Name);
+            try
+            {
+                this._logger.LogInformation("Acquiring DirectInput device for {Name} (GUID: {Guid})",
+                    controller.Name, controller.DirectInputInstanceGuid);
+
+                var device = this._directInput.CreateDevice(controller.DirectInputInstanceGuid);
+                device.SetDataFormat<RawJoystickState>();
+                device.SetCooperativeLevel(IntPtr.Zero, CooperativeLevel.NonExclusive | CooperativeLevel.Background);
+                device.Acquire();
+
+                this._devices[controller.Id] = device;
+                this._logger.LogInformation("Successfully acquired DirectInput device for {Name}", controller.Name);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Failed to acquire DirectInput device for controller {Name}",
+                    controller.Name);
+            }
         }
     }
 
     private void ReleaseController(Controller controller)
     {
-        if (!this._devices.TryGetValue(controller.Id, out var device))
-            return;
-
-        try
-        {
-            device.Unacquire();
-            device.Dispose();
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogWarning(ex, "Error releasing device for controller {Name}", controller.Name);
-        }
-
-        this._devices.Remove(controller.Id);
-
-        // Clear controller state
-        controller.LastState = ControllerState.Empty;
-        controller.ButtonHeldSince = ImmutableDictionary<ControllerButton, DateTime>.Empty;
-        controller.ButtonLastRepeat = ImmutableDictionary<ControllerButton, DateTime>.Empty;
-    }
-
-    private void OnPollTick(object? sender, EventArgs e)
-    {
-        var now = DateTime.UtcNow;
-
-        foreach (var controller in this._controllerListService.Controllers)
+        lock (this._lock)
         {
             if (!this._devices.TryGetValue(controller.Id, out var device))
-                continue;
+                return;
 
             try
             {
-                device.Poll();
-                var rawState = device.GetCurrentJoystickState();
-                var newState = this.CreateControllerState(rawState);
-
-                this.ProcessStateChange(controller, newState, now);
-                controller.LastState = newState;
+                device.Unacquire();
+                device.Dispose();
             }
             catch (Exception ex)
             {
-                this._logger.LogWarning(ex, "Failed to poll controller {Name}, releasing", controller.Name);
-                this.ReleaseController(controller);
+                this._logger.LogWarning(ex, "Error releasing device for controller {Name}", controller.Name);
+            }
+
+            this._devices.Remove(controller.Id);
+
+            // Clear controller state
+            controller.LastState = ControllerState.Empty;
+            controller.ButtonHeldSince = ImmutableDictionary<ControllerButton, DateTime>.Empty;
+            controller.ButtonLastRepeat = ImmutableDictionary<ControllerButton, DateTime>.Empty;
+        }
+    }
+
+    private async Task PollLoop(CancellationToken ct)
+    {
+        this._logger.LogDebug("Poll loop started on thread {ThreadId}", Environment.CurrentManagedThreadId);
+
+        while (!ct.IsCancellationRequested)
+        {
+            this._pollCount++;
+            if (this._pollCount == 1 || this._pollCount % 500 == 0)
+                this._logger.LogInformation("Poll tick #{Count}, controllers={ControllerCount}, devices={DeviceCount}",
+                    this._pollCount, this._controllerListService.Controllers.Count, this._devices.Count);
+
+            var now = DateTime.UtcNow;
+
+            // Get a snapshot of controllers to avoid issues during iteration
+            var controllers = this._controllerListService.Controllers;
+
+            foreach (var controller in controllers)
+            {
+                IDirectInputDevice8? device;
+                lock (this._lock)
+                {
+                    if (!this._devices.TryGetValue(controller.Id, out device))
+                        continue;
+                }
+
+                try
+                {
+                    device.Poll();
+                    var rawState = device.GetCurrentJoystickState();
+                    var newState = this.CreateControllerState(rawState);
+
+                    this.ProcessStateChange(controller, newState, now);
+                    controller.LastState = newState;
+                }
+                catch (Exception ex)
+                {
+                    this._logger.LogWarning(ex, "Failed to poll controller {Name}, releasing", controller.Name);
+                    this.ReleaseController(controller);
+                }
+            }
+
+            try
+            {
+                await Task.Delay(PollIntervalMs, ct);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
             }
         }
+
+        this._logger.LogDebug("Poll loop ended");
     }
 
     private ControllerState CreateControllerState(JoystickState rawState)
@@ -197,9 +256,12 @@ public class ControllerPollingService : IDisposable
             if (!oldActive.Contains(button))
             {
                 // Button just pressed
+                this._logger.LogInformation("Button pressed: {Button} on {Controller}", button, controller.Name);
                 controller.ButtonHeldSince = controller.ButtonHeldSince.SetItem(button, now);
                 controller.ButtonLastRepeat = controller.ButtonLastRepeat.SetItem(button, now);
-                controller.RaiseButtonPressed(button);
+
+                // Dispatch to UI thread
+                Dispatcher.UIThread.Post(() => controller.RaiseButtonPressed(button));
             }
             else
             {
@@ -214,7 +276,7 @@ public class ControllerPollingService : IDisposable
                         timeSinceLastRepeat >= Controller.RepeatIntervalMs)
                     {
                         controller.ButtonLastRepeat = controller.ButtonLastRepeat.SetItem(button, now);
-                        controller.RaiseButtonRepeat(button);
+                        Dispatcher.UIThread.Post(() => controller.RaiseButtonRepeat(button));
                     }
                 }
             }
@@ -228,7 +290,7 @@ public class ControllerPollingService : IDisposable
                 // Button just released
                 controller.ButtonHeldSince = controller.ButtonHeldSince.Remove(button);
                 controller.ButtonLastRepeat = controller.ButtonLastRepeat.Remove(button);
-                controller.RaiseButtonReleased(button);
+                Dispatcher.UIThread.Post(() => controller.RaiseButtonReleased(button));
             }
         }
     }
@@ -236,7 +298,6 @@ public class ControllerPollingService : IDisposable
     public void Dispose()
     {
         this.Stop();
-        this._pollTimer.Tick -= this.OnPollTick;
         this._directInput.Dispose();
     }
 }

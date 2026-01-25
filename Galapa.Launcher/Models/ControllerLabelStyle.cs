@@ -1,23 +1,28 @@
 namespace Galapa.Launcher.Models;
 
 /// <summary>
-/// Determines the button label style to display for controller prompts.
-/// Values match the game's ButtonCaptionType for compatibility.
+///     Determines the button label style to display for controller prompts.
+///     Values match the game's ButtonCaptionType for compatibility.
 /// </summary>
 public enum ControllerLabelStyle
 {
     /// <summary>
-    /// Xbox style labels (A, B, X, Y, LB, RB, LT, RT).
+    ///     Automatic style labels
     /// </summary>
-    Xbox = 0,
+    Automatic = 0,
 
     /// <summary>
-    /// Nintendo style labels (B, A, Y, X, L, R, ZL, ZR).
+    ///     DirectInput Numeric style labels (1, 2, 3, 4, 5, 6, 7, 8).
     /// </summary>
-    Nintendo = 3,
+    Numeric = 1,
 
     /// <summary>
-    /// Generic numbered style (1, 2, 3, 4, L1, R1, L2, R2).
+    ///     Xbox style labels (A, B, X, Y, LB, RB, LT, RT).
     /// </summary>
-    Generic = 99
+    Xbox = 2,
+
+    /// <summary>
+    ///     Nintendo style labels (B, A, Y, X, L, R, ZL, ZR).
+    /// </summary>
+    Nintendo = 3
 }

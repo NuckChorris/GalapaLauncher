@@ -1,6 +1,5 @@
-using System;
+using System.ComponentModel;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using DryIoc;
 using Galapa.Launcher.Models;
@@ -9,8 +8,8 @@ using Galapa.Launcher.Services;
 namespace Galapa.Launcher.Controls;
 
 /// <summary>
-/// A control that displays controller button labels that automatically
-/// update based on the active controller type.
+///     A control that displays controller button labels that automatically
+///     update based on the active controller type.
 /// </summary>
 public class ControllerIcon : TemplatedControl
 {
@@ -18,7 +17,7 @@ public class ControllerIcon : TemplatedControl
         AvaloniaProperty.Register<ControllerIcon, ControllerAction>(nameof(Action));
 
     public static readonly StyledProperty<bool> HideWhenDisconnectedProperty =
-        AvaloniaProperty.Register<ControllerIcon, bool>(nameof(HideWhenDisconnected), defaultValue: false);
+        AvaloniaProperty.Register<ControllerIcon, bool>(nameof(HideWhenDisconnected));
 
     public static readonly DirectProperty<ControllerIcon, string> LabelProperty =
         AvaloniaProperty.RegisterDirect<ControllerIcon, string>(
@@ -34,30 +33,30 @@ public class ControllerIcon : TemplatedControl
     }
 
     /// <summary>
-    /// The controller action to display a label for.
+    ///     The controller action to display a label for.
     /// </summary>
     public ControllerAction Action
     {
-        get => GetValue(ActionProperty);
-        set => SetValue(ActionProperty, value);
+        get => this.GetValue(ActionProperty);
+        set => this.SetValue(ActionProperty, value);
     }
 
     /// <summary>
-    /// Whether to hide the control when no controller is connected.
+    ///     Whether to hide the control when no controller is connected.
     /// </summary>
     public bool HideWhenDisconnected
     {
-        get => GetValue(HideWhenDisconnectedProperty);
-        set => SetValue(HideWhenDisconnectedProperty, value);
+        get => this.GetValue(HideWhenDisconnectedProperty);
+        set => this.SetValue(HideWhenDisconnectedProperty, value);
     }
 
     /// <summary>
-    /// The current label text based on the active controller style.
+    ///     The current label text based on the active controller style.
     /// </summary>
     public string Label
     {
         get => this._label;
-        private set => SetAndRaise(LabelProperty, ref this._label, value);
+        private set => this.SetAndRaise(LabelProperty, ref this._label, value);
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -65,7 +64,7 @@ public class ControllerIcon : TemplatedControl
         base.OnAttachedToVisualTree(e);
 
         // Try to get the ActiveControllerService from the app's service container
-        this._activeControllerService = Program.Services?.Resolve<ActiveControllerService>();
+        this._activeControllerService = Program.Services.Resolve<ActiveControllerService>();
 
         if (this._activeControllerService != null)
         {
@@ -91,25 +90,15 @@ public class ControllerIcon : TemplatedControl
         base.OnPropertyChanged(change);
 
         if (change.Property == ActionProperty)
-        {
             this.UpdateLabel();
-        }
-        else if (change.Property == HideWhenDisconnectedProperty)
-        {
-            this.UpdateVisibility();
-        }
+        else if (change.Property == HideWhenDisconnectedProperty) this.UpdateVisibility();
     }
 
-    private void OnActiveControllerPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void OnActiveControllerPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(ActiveControllerService.LabelStyle))
-        {
             this.UpdateLabel();
-        }
-        else if (e.PropertyName == nameof(ActiveControllerService.IsControllerConnected))
-        {
-            this.UpdateVisibility();
-        }
+        else if (e.PropertyName == nameof(ActiveControllerService.IsControllerConnected)) this.UpdateVisibility();
     }
 
     private void UpdateLabel()
@@ -121,13 +110,9 @@ public class ControllerIcon : TemplatedControl
     private void UpdateVisibility()
     {
         if (this.HideWhenDisconnected && this._activeControllerService != null)
-        {
             this.IsVisible = this._activeControllerService.IsControllerConnected;
-        }
         else
-        {
             this.IsVisible = true;
-        }
     }
 
     private static string GetLabel(ControllerAction action, ControllerLabelStyle style)
@@ -137,30 +122,30 @@ public class ControllerIcon : TemplatedControl
             // Bumpers
             (ControllerAction.BumperLeft, ControllerLabelStyle.Xbox) => "LB",
             (ControllerAction.BumperLeft, ControllerLabelStyle.Nintendo) => "L",
-            (ControllerAction.BumperLeft, ControllerLabelStyle.Generic) => "L1",
+            (ControllerAction.BumperLeft, ControllerLabelStyle.Numeric) => "L1",
 
             (ControllerAction.BumperRight, ControllerLabelStyle.Xbox) => "RB",
             (ControllerAction.BumperRight, ControllerLabelStyle.Nintendo) => "R",
-            (ControllerAction.BumperRight, ControllerLabelStyle.Generic) => "R1",
+            (ControllerAction.BumperRight, ControllerLabelStyle.Numeric) => "R1",
 
             // Triggers
             (ControllerAction.TriggerLeft, ControllerLabelStyle.Xbox) => "LT",
             (ControllerAction.TriggerLeft, ControllerLabelStyle.Nintendo) => "ZL",
-            (ControllerAction.TriggerLeft, ControllerLabelStyle.Generic) => "L2",
+            (ControllerAction.TriggerLeft, ControllerLabelStyle.Numeric) => "L2",
 
             (ControllerAction.TriggerRight, ControllerLabelStyle.Xbox) => "RT",
             (ControllerAction.TriggerRight, ControllerLabelStyle.Nintendo) => "ZR",
-            (ControllerAction.TriggerRight, ControllerLabelStyle.Generic) => "R2",
+            (ControllerAction.TriggerRight, ControllerLabelStyle.Numeric) => "R2",
 
             // Confirm (face button)
             (ControllerAction.Confirm, ControllerLabelStyle.Xbox) => "A",
             (ControllerAction.Confirm, ControllerLabelStyle.Nintendo) => "B",
-            (ControllerAction.Confirm, ControllerLabelStyle.Generic) => "1",
+            (ControllerAction.Confirm, ControllerLabelStyle.Numeric) => "1",
 
             // Decline (face button)
             (ControllerAction.Decline, ControllerLabelStyle.Xbox) => "B",
             (ControllerAction.Decline, ControllerLabelStyle.Nintendo) => "A",
-            (ControllerAction.Decline, ControllerLabelStyle.Generic) => "2",
+            (ControllerAction.Decline, ControllerLabelStyle.Numeric) => "2",
 
             // Directional
             (ControllerAction.Up, _) => "↑",
